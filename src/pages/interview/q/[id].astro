@@ -1,0 +1,29 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { NAV } from '../../../ui/nav.ts';
+import { getCollection, render } from 'astro:content';
+export async function getStaticPaths() {
+  const qs = await getCollection('interviewQuestions');
+  return qs.map((q) => ({ params: { id: q.id }, props: { q } }));
+}
+const { q } = Astro.props;
+const { Content } = await render(q);
+const CAT: Record<string, string> = { intro: '자기소개', career: '경력', tech: '기술', behavioral: '행동·상황', culture: '회사·문화' };
+---
+<Base title={q.data.q} domain="interview" nav={[...NAV.interview]}>
+  <div class="chips" style="margin-bottom:8px"><span class="chip chip-domain">{CAT[q.data.category]}</span><span class="chip">{q.data.lang}</span>{q.data.tags.map((t) => <span class="chip">{t}</span>)}<span class="chip">목표 {q.data.minutes}분</span></div>
+  <h1 lang={q.data.lang === 'zh' ? 'zh-CN' : q.data.lang}>{q.data.q}</h1>
+  {q.data.hint && <p class="muted">힌트: {q.data.hint}</p>}
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));align-items:start">
+    <div class="card outlined prose"><h2 style="margin-top:0">답변 가이드</h2><Content /></div>
+    <div class="card" data-answer-for={`interview:question:${q.id}`}>
+      <h2>내 답변</h2>
+      <p class="small muted">이 브라우저의 localStorage 에만 저장됩니다. 저장할 때마다 버전이 쌓입니다. 백업은 설정 → 내보내기.</p>
+      <textarea placeholder="답변을 써 두세요"></textarea>
+      <div class="btn-row" style="margin-top:8px"><button class="btn btn-filled" data-save>버전 저장</button><span class="small muted" data-status></span></div>
+      <h3 style="margin-top:16px">이전 버전</h3>
+      <ul class="versions"></ul>
+    </div>
+  </div>
+  <script src="../../../modules/answers.ts"></script>
+</Base>

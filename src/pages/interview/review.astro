@@ -1,0 +1,12 @@
+---
+import Base from '../../layouts/Base.astro';
+import Flashcard from '../../ui/Flashcard.astro';
+import { NAV } from '../../ui/nav.ts';
+import { getCollection } from 'astro:content';
+import { interviewItems } from '../../core/convert.ts';
+const items = interviewItems((await getCollection('interviewQuestions')).map((q) => ({ id: q.id, ...q.data })));
+---
+<Base title="면접 복습" domain="interview" nav={[...NAV.interview]}>
+  <div class="page-head"><h1>빠른 복습</h1><span class="sub">질문을 보고 머릿속으로 답한 뒤 힌트와 비교 · 전체 {items.length}장</span></div>
+  <Flashcard items={items} domain="interview" />
+</Base>

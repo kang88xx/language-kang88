@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import { NAV } from '../../ui/nav.ts';
+import { getCollection } from 'astro:content';
+const sets = await getCollection('enShadowing');
+---
+<Base title="쉐도잉" domain="en" nav={[...NAV.en]}>
+  <div class="page-head"><h1>쉐도잉</h1><span class="sub">듣기 → 따라 말하며 녹음 → 비교. 녹음은 저장되지 않습니다.</span></div>
+  {sets.map((s) => (
+    <details class="lesson" open>
+      <summary><strong>{s.data.title}</strong><span class="chip">{s.data.sentences.length}문장</span></summary>
+      <div class="body">
+        {s.data.sentences.map((x) => (
+          <div class="sent">
+            <div lang="en" style="font-size:1.1rem">{x.en}</div>
+            <div class="ko">{x.ko}</div>
+            <div class="btn-row" style="margin-top:8px"><button class="btn btn-sm btn-tonal" data-say={x.en} data-lang="en-US">🔊 듣기</button><button class="btn btn-sm btn-outlined" data-rec>● 녹음</button><audio controls class="hidden" style="height:32px"></audio></div>
+          </div>
+        ))}
+      </div>
+    </details>
+  ))}
+  <script src="../../modules/tts.ts"></script>
+  <script src="../../modules/shadowing.ts"></script>
+</Base>

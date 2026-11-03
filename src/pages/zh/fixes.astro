@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import Search from '../../ui/Search.astro';
+import Empty from '../../ui/Empty.astro';
+import { NAV } from '../../ui/nav.ts';
+import { getCollection } from 'astro:content';
+const fixes = (await getCollection('zhFixes')).map((f) => f.data).sort((a, b) => b.date.localeCompare(a.date));
+---
+<Base title="교정 노트" domain="zh" nav={[...NAV.zh]}>
+  <div class="page-head"><h1>교정 노트</h1><span class="sub">강사가 바로잡아 준 표현 <span data-count>{fixes.length}</span>건</span></div>
+  <div data-filter-root>
+    <Search placeholder="교정 표현 검색" />
+    {fixes.map((f) => (
+      <div class="card" style="margin-bottom:10px" data-hay={`${f.date} ${f.wrong} ${f.right} ${f.note}`}>
+        <div class="small muted">{f.date} · {f.n}회</div>
+        <div class="zh" lang="zh-CN"><span class="bad">{f.wrong}</span> → <span class="good">{f.right}</span> <button class="icon-btn" data-say={f.right} data-lang="zh-CN" aria-label="듣기" style="width:28px;height:28px;font-size:.9rem">🔊</button></div>
+        <div class="small" style="margin-top:6px">{f.note}</div>
+      </div>
+    ))}
+    <Empty />
+  </div>
+  <script src="../../modules/filter.ts"></script>
+  <script src="../../modules/tts.ts"></script>
+</Base>

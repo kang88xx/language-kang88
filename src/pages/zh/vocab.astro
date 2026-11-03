@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import Search from '../../ui/Search.astro';
+import Empty from '../../ui/Empty.astro';
+import { NAV } from '../../ui/nav.ts';
+import { getCollection } from 'astro:content';
+const vocab = (await getCollection('zhVocab')).map((v) => v.data);
+const months = [...new Set(vocab.map((v) => v.date.slice(0, 7)))].sort().reverse();
+---
+<Base title="단어장" domain="zh" nav={[...NAV.zh]}>
+  <div class="page-head"><h1>단어장</h1><span class="sub"><span data-count>{vocab.length}</span>개</span><a class="btn btn-tonal btn-sm" href="/zh/review/">플래시카드 복습</a></div>
+  <div data-filter-root>
+    <Search placeholder="한자 · 병음 · 뜻 검색" selects={[{ key: 'month', label: '월', options: months.map((m) => [m, `${Number(m.slice(5))}월`]) }]} />
+    <table><thead><tr><th>날짜</th><th>중국어</th><th>병음</th><th>뜻</th></tr></thead><tbody>
+      {vocab.map((v) => <tr data-hay={`${v.date} ${v.zh} ${v.py} ${v.ko}`} data-month={v.date.slice(0, 7)}><td class="muted small">{v.date.slice(5)}</td><td><span class="zh" lang="zh-CN">{v.zh}</span> <button class="icon-btn" data-say={v.zh} data-lang="zh-CN" aria-label="듣기" style="width:28px;height:28px;font-size:.9rem">🔊</button></td><td class="py">{v.py}</td><td>{v.ko}</td></tr>)}
+    </tbody></table>
+    <Empty />
+  </div>
+  <script src="../../modules/filter.ts"></script>
+  <script src="../../modules/tts.ts"></script>
+</Base>

@@ -1,0 +1,48 @@
+---
+import Base from '../../layouts/Base.astro';
+import { NAV } from '../../ui/nav.ts';
+import { getCollection } from 'astro:content';
+import cal from '../../../content/zh/calendar.json';
+const [lessons, vocab, fixes] = await Promise.all([getCollection('zhLessons'), getCollection('zhVocab'), getCollection('zhFixes')]);
+const p = cal.progress;
+const WD = ['일', '월', '화', '수', '목', '금', '토'];
+type Month = typeof cal.months[number] & { start?: number };
+const cls = (m: Month, d: number) => {
+  const att = (m.att as Record<string, number>)[String(d)];
+  if (att) return ['att', att] as const;
+  if (m.abs.includes(d)) return ['abs', '결'] as const;
+  if (m.cancel.includes(d)) return ['cancel', '휴'] as const;
+  if (m.pp.includes(d)) return ['pp', '연'] as const;
+  if (m.rp.includes(d)) return ['rp', '정'] as const;
+  return ['', ''] as const;
+};
+const latest = lessons.map((l) => l.data).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
+---
+<Base title="중국어" domain="zh" nav={[...NAV.zh]}>
+  <div class="page-head"><h1>중국어 대시보드</h1><span class="sub">맛있는 비즈니스 중국어 LEVEL 4 · {p.start} ~ {p.end}</span></div>
+  <div class="stats" style="margin-bottom:20px">
+    <div class="card stat"><span class="v">{p.done}<small>/ {p.total}회</small></span><span class="l">진도 {p.pct}%</span></div>
+    <div class="card stat"><span class="v">{p.att}<small>회</small></span><span class="l">출석 · 결석 {p.abs} · 휴강 {p.cancel}</span></div>
+    <div class="card stat"><span class="v">{vocab.length}<small>개</small></span><span class="l">누적 단어</span></div>
+    <div class="card stat"><span class="v">{fixes.length}<small>건</small></span><span class="l">교정 표현</span></div>
+    <div class="card stat"><span class="v"><span data-due="zh">–</span><small>장</small></span><span class="l">복습 대기 · <a href="/zh/review/">복습하기</a></span></div>
+  </div>
+  <h2>최근 수업</h2>
+  <div class="grid" style="margin-bottom:20px">
+    {latest.map((l) => <a class="card link" href={`/zh/lessons/#${l.date}`}><div class="small muted">{l.date} ({l.day}) · {l.n}회</div><div>{l.theme}</div></a>)}
+  </div>
+  <h2>출석 달력</h2>
+  <div class="legend"><span><i style="background:var(--blue-cont)"></i>출석(회차)</span><span><i style="background:var(--red-cont)"></i>결석</span><span><i style="background:var(--surface-3)"></i>휴강</span><span><i style="background:var(--yellow-cont)"></i>연기</span></div>
+  <div class="cal-months">
+    {cal.months.map((m) => (
+      <div class="cal"><h3>{m.name}</h3>
+        <div class="cal-grid">
+          {WD.map((w) => <span class="wd">{w}</span>)}
+          {Array.from({ length: m.blanks }, () => <span class="d blank"></span>)}
+          {Array.from({ length: m.days }, (_, i) => { const d = i + 1; const [c, label] = cls(m as Month, d); return <span class={`d ${c}`} title={`${d}일${label ? ` · ${label}` : ''}`}>{c === 'att' ? label : d}</span>; })}
+        </div>
+      </div>
+    ))}
+  </div>
+  <script src="../../modules/hub.ts"></script>
+</Base>

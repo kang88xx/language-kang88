@@ -1,0 +1,55 @@
+---
+import '../styles/global.css';
+import type { Domain } from '../core/items.ts';
+import { DOMAIN_LABEL } from '../core/items.ts';
+
+interface NavItem { href: string; label: string; icon: string }
+interface Props { title: string; domain?: Domain; nav?: NavItem[]; description?: string }
+const { title, domain, nav = [], description = '개인 학습: 영어 · 중국어 · 면접' } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href: string) => (href.replace(/\/$/, '') || '/') === path;
+const domains: Domain[] = ['zh', 'en', 'interview'];
+const mark = domain === 'zh' ? '中' : domain === 'en' ? 'En' : domain === 'interview' ? '面' : '學';
+---
+<!doctype html>
+<html lang="ko" data-domain={domain}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" />
+    <title>{title} · 學</title>
+    <script is:inline>
+      try { const t = JSON.parse(localStorage.getItem('lang.v1.settings') || '{}').theme; if (t && t !== 'auto') document.documentElement.dataset.theme = t; } catch {}
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">본문으로 건너뛰기</a>
+    <header class="appbar">
+      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">{mark}</span><span>學 study</span></a>
+      <nav class="domain-tabs" aria-label="학습 영역">
+        {domains.map((d) => <a href={`/${d}/`} aria-current={domain === d ? 'true' : undefined}>{DOMAIN_LABEL[d]}</a>)}
+      </nav>
+      <div class="appbar-right">
+        <a class="icon-btn" href="/settings/" title="설정" aria-label="설정">⚙</a>
+      </div>
+    </header>
+    <main id="main">
+      {nav.length > 0 && (
+        <ul class="subnav" aria-label="섹션">
+          {nav.map((n) => <li><a href={n.href} aria-current={isCurrent(n.href) ? 'page' : undefined}>{n.label}</a></li>)}
+        </ul>
+      )}
+      <slot />
+    </main>
+    {nav.length > 0 && (
+      <nav class="bottomnav" aria-label="섹션 (모바일)">
+        {nav.map((n) => <a href={n.href} aria-current={isCurrent(n.href) ? 'page' : undefined}><span class="ico" aria-hidden="true">{n.icon}</span>{n.label}</a>)}
+      </nav>
+    )}
+  </body>
+</html>

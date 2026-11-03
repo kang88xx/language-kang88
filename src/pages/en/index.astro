@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import { NAV } from '../../ui/nav.ts';
+import { getCollection } from 'astro:content';
+const [v, e, s] = await Promise.all([getCollection('enVocab'), getCollection('enExpressions'), getCollection('enShadowing')]);
+---
+<Base title="영어" domain="en" nav={[...NAV.en]}>
+  <div class="page-head"><h1>영어 대시보드</h1><span class="sub">샘플 데이터 · content/en 에서 편집</span></div>
+  <div class="stats" style="margin-bottom:20px">
+    <div class="card stat"><span class="v">{v.length}<small>개</small></span><span class="l"><a href="/en/vocab/">단어</a></span></div>
+    <div class="card stat"><span class="v">{e.length}<small>개</small></span><span class="l"><a href="/en/expressions/">표현</a></span></div>
+    <div class="card stat"><span class="v">{s.reduce((a, x) => a + x.data.sentences.length, 0)}<small>문장</small></span><span class="l"><a href="/en/shadowing/">쉐도잉 {s.length}세트</a></span></div>
+    <div class="card stat"><span class="v"><span data-due="en">–</span><small>장</small></span><span class="l">복습 대기 · <a href="/en/review/">복습하기</a></span></div>
+  </div>
+  <div class="card outlined">
+    <h2>단어 추가하는 법</h2>
+    <p class="small">아직 입력 폼은 없습니다. <code>content/en/vocab.json</code>, <code>expressions.json</code>, <code>shadowing/*.json</code> 을 편집하고 푸시하면 반영됩니다. PLAN.md 2단계에서 브라우저 입력 큐를 추가할 예정입니다.</p>
+  </div>
+  <script src="../../modules/hub.ts"></script>
+</Base>

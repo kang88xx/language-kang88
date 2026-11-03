@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import Flashcard from '../../ui/Flashcard.astro';
+import { NAV } from '../../ui/nav.ts';
+import { getCollection } from 'astro:content';
+import { enVocabItems, enExpressionItems, enSentenceItems } from '../../core/convert.ts';
+const [v, e, s] = await Promise.all([getCollection('enVocab'), getCollection('enExpressions'), getCollection('enShadowing')]);
+const items = [...enVocabItems(v.map((x) => x.data)), ...enExpressionItems(e.map((x) => x.data)), ...enSentenceItems(s.map((x) => ({ id: x.id, ...x.data })))];
+---
+<Base title="영어 복습" domain="en" nav={[...NAV.en]}>
+  <div class="page-head"><h1>복습</h1><span class="sub">단어 → 표현 → 문장 · 전체 {items.length}장</span></div>
+  <Flashcard items={items} domain="en" />
+</Base>

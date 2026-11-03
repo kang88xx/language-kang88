@@ -1,0 +1,37 @@
+---
+import Base from '../../layouts/Base.astro';
+import Search from '../../ui/Search.astro';
+import Empty from '../../ui/Empty.astro';
+import { NAV } from '../../ui/nav.ts';
+import { getCollection } from 'astro:content';
+const lessons = (await getCollection('zhLessons')).map((l) => l.data).sort((a, b) => b.date.localeCompare(a.date));
+const months = [...new Set(lessons.map((l) => l.date.slice(0, 7)))].sort().reverse();
+const hay = (l: typeof lessons[number]) => [l.date, l.theme, `${l.n}회`, ...l.items.flatMap((i) => [i.gr, i.zh, i.py, i.ko, i.fix ? `${i.fix.bad} ${i.fix.good}` : '']), ...l.words].join(' ');
+---
+<Base title="수업 기록" domain="zh" nav={[...NAV.zh]}>
+  <div class="page-head"><h1>수업 기록</h1><span class="sub"><span data-count>{lessons.length}</span>회</span></div>
+  <div data-filter-root>
+    <Search placeholder="한자 · 병음 · 뜻 · 어법 · 회차 검색" selects={[{ key: 'month', label: '월', options: months.map((m) => [m, `${Number(m.slice(5))}월`]) }]} />
+    {lessons.map((l) => (
+      <details class="lesson" id={l.date} data-hay={hay(l)} data-month={l.date.slice(0, 7)}>
+        <summary><strong>{l.date} ({l.day})</strong><span class="chip chip-domain">{l.n}회 · {l.pct}%</span><span class="theme">{l.theme}</span>{l.items.some((i) => i.fix) && <span class="chip chip-red">교정 {l.items.filter((i) => i.fix).length}</span>}</summary>
+        <div class="body">
+          {l.items.map((it) => (
+            <div class="sent">
+              {it.gr && <div class="gr">{it.gr}</div>}
+              {it.zh && <div class="zh" lang="zh-CN">{it.zh} <button class="icon-btn" data-say={it.zh} data-lang="zh-CN" aria-label="듣기" style="width:28px;height:28px;font-size:.9rem">🔊</button></div>}
+              {it.py && <div class="py">{it.py}</div>}
+              {it.fix && <div class="zh" lang="zh-CN"><span class="bad">{it.fix.bad}</span> → <span class="good">{it.fix.good}</span></div>}
+              <div class="ko">{it.ko}</div>
+            </div>
+          ))}
+          {l.words.length > 0 && <div class="sent"><div class="gr">오늘의 단어</div>{l.words.map((w) => <div lang="zh-CN">{w}</div>)}</div>}
+        </div>
+      </details>
+    ))}
+    <Empty />
+  </div>
+  <script src="../../modules/filter.ts"></script>
+  <script src="../../modules/tts.ts"></script>
+  <script is:inline>if (location.hash) { const d = document.getElementById(location.hash.slice(1)); if (d) { d.open = true; d.scrollIntoView(); } }</script>
+</Base>

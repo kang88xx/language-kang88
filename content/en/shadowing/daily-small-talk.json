@@ -1,0 +1,10 @@
+{
+ "title": "일상 스몰토크",
+ "source": "sample",
+ "sentences": [
+  { "en": "How was your weekend? Did you get up to anything fun?", "ko": "주말 어땠어요? 재미있는 거 했어요?" },
+  { "en": "It's freezing today. I heard the low is going to hit zero.", "ko": "오늘 너무 춥네요. 최저 기온이 0도라던데요." },
+  { "en": "I finally got a haircut. It feels like a fresh start.", "ko": "드디어 머리를 잘랐어요. 새 출발 같은 기분이에요." },
+  { "en": "Sorry, I didn't quite catch that. Could you say it again?", "ko": "죄송해요, 잘 못 들었어요. 다시 말씀해 주시겠어요?" }
+ ]
+}

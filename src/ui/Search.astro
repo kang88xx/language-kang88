@@ -1,0 +1,14 @@
+---
+interface Props { placeholder?: string; selects?: Array<{ key: string; label: string; options: Array<[string, string]> }> }
+const { placeholder = '검색', selects = [] } = Astro.props;
+---
+<div class="toolbar">
+  <input type="search" placeholder={placeholder} aria-label={placeholder} />
+  {selects.map((s) => (
+    <select data-key={s.key} aria-label={s.label}>
+      <option value="">{s.label}: 전체</option>
+      {s.options.map(([v, l]) => <option value={v}>{l}</option>)}
+    </select>
+  ))}
+  <button class="btn btn-quiet" data-reset style="flex:0 0 auto">초기화</button>
+</div>

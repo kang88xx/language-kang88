@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import Search from '../../ui/Search.astro';
+import Empty from '../../ui/Empty.astro';
+import { NAV } from '../../ui/nav.ts';
+import { getCollection } from 'astro:content';
+const list = (await getCollection('enExpressions')).map((v) => v.data);
+const REG: Record<string, string> = { casual: '캐주얼', business: '비즈니스', neutral: '중립' };
+---
+<Base title="영어 표현" domain="en" nav={[...NAV.en]}>
+  <div class="page-head"><h1>표현</h1><span class="sub"><span data-count>{list.length}</span>개</span></div>
+  <div data-filter-root>
+    <Search placeholder="표현 · 뜻 · 예문 검색" selects={[{ key: 'register', label: '격식', options: Object.entries(REG) }]} />
+    <div class="grid">
+      {list.map((x) => <div class="card" data-hay={`${x.phrase} ${x.ko} ${x.example} ${x.tags.join(' ')}`} data-register={x.register}>
+        <div style="display:flex;align-items:center;gap:6px"><strong lang="en" style="font-size:1.1rem">{x.phrase}</strong><button class="icon-btn" data-say={x.example} data-lang="en-US" aria-label="예문 듣기" style="width:28px;height:28px;font-size:.9rem">🔊</button></div>
+        <div>{x.ko}</div>
+        <div class="small muted" lang="en" style="margin-top:6px">{x.example}</div>
+        <div class="chips" style="margin-top:8px"><span class="chip chip-domain">{REG[x.register]}</span>{x.tags.map((t) => <span class="chip">{t}</span>)}</div>
+      </div>)}
+    </div>
+    <Empty />
+  </div>
+  <script src="../../modules/filter.ts"></script>
+  <script src="../../modules/tts.ts"></script>
+</Base>

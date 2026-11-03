@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import Search from '../../ui/Search.astro';
+import Empty from '../../ui/Empty.astro';
+import { NAV } from '../../ui/nav.ts';
+import { getCollection } from 'astro:content';
+const vocab = (await getCollection('enVocab')).map((v) => v.data);
+const tags = [...new Set(vocab.flatMap((v) => v.tags))].sort();
+---
+<Base title="영어 단어장" domain="en" nav={[...NAV.en]}>
+  <div class="page-head"><h1>단어장</h1><span class="sub"><span data-count>{vocab.length}</span>개</span><a class="btn btn-tonal btn-sm" href="/en/review/">플래시카드 복습</a></div>
+  <div data-filter-root>
+    <Search placeholder="단어 · 뜻 · 예문 검색" selects={[{ key: 'tag', label: '태그', options: tags.map((t) => [t, t]) }]} />
+    <table><thead><tr><th>단어</th><th>뜻</th><th>예문</th></tr></thead><tbody>
+      {vocab.map((v) => <tr data-hay={`${v.word} ${v.ipa ?? ''} ${v.ko} ${v.example ?? ''} ${v.tags.join(' ')}`} data-tag={v.tags[0] ?? ''}><td><strong lang="en">{v.word}</strong> <button class="icon-btn" data-say={v.word} data-lang="en-US" aria-label="듣기" style="width:28px;height:28px;font-size:.9rem">🔊</button>{v.ipa && <div class="py">{v.ipa}</div>}</td><td>{v.ko}<div class="chips" style="margin-top:4px">{v.tags.map((t) => <span class="chip">{t}</span>)}</div></td><td lang="en" class="small">{v.example}</td></tr>)}
+    </tbody></table>
+    <Empty />
+  </div>
+  <script src="../../modules/filter.ts"></script>
+  <script src="../../modules/tts.ts"></script>
+</Base>

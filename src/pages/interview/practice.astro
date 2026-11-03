@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import { NAV } from '../../ui/nav.ts';
+import { getCollection } from 'astro:content';
+const qs = (await getCollection('interviewQuestions')).map((q) => ({ id: `interview:question:${q.id}`, ...q.data }));
+const CAT: Record<string, string> = { intro: '자기소개', career: '경력', tech: '기술', behavioral: '행동·상황', culture: '회사·문화' };
+---
+<Base title="면접 연습" domain="interview" nav={[...NAV.interview]}>
+  <div class="page-head"><h1>연습 모드</h1><span class="sub">랜덤 질문 → 생각 정리 → 타이머 답변 → 자가평가. 복습 간격에 반영됩니다.</span></div>
+  <div data-practice>
+    <script type="application/json" set:html={JSON.stringify(qs).replace(/</g, '\\u003c')} />
+    <div class="toolbar">
+      <select name="category" aria-label="분류"><option value="">분류: 전체</option>{Object.entries(CAT).map(([v, l]) => <option value={v}>{l}</option>)}</select>
+      <select name="lang" aria-label="언어"><option value="">언어: 전체</option><option value="ko">한국어</option><option value="en">영어</option><option value="zh">중국어</option></select>
+      <select name="prep" aria-label="준비 시간"><option value="30">준비 30초</option><option value="60">준비 60초</option><option value="0">준비 없음</option></select>
+      <button class="btn btn-filled" data-begin style="flex:0 0 auto">▶ 시작</button>
+    </div>
+    <div class="stage"><div class="empty">조건을 고르고 시작을 누르세요. 녹음은 선택이며 저장되지 않습니다.</div></div>
+  </div>
+  <script src="../../modules/practice.ts"></script>
+</Base>

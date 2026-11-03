@@ -1,0 +1,68 @@
+/* 디자인 토큰 — Chinese-class/site/styles.css 에서 승계 (Material 3 풍) */
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-1: #f8fafd;
+  --surface-2: #f0f4f9;
+  --surface-3: #e9eef6;
+  --outline: #dadce0;
+  --outline-soft: #e8eaed;
+  --on-surface: #1f1f1f;
+  --on-surface-2: #444746;
+  --on-surface-3: #5f6368;
+  --blue: #0b57d0;
+  --blue-text: #1a73e8;
+  --blue-cont: #d3e3fd;
+  --blue-soft: #e8f0fe;
+  --green: #146c2e;
+  --green-cont: #c4eed0;
+  --green-soft: #e6f4ea;
+  --red: #b3261e;
+  --red-cont: #f9dedc;
+  --red-soft: #fce8e6;
+  --yellow: #8a5a00;
+  --yellow-cont: #ffe8a3;
+  --yellow-soft: #fef7e0;
+  --purple: #6b3fa0;
+  --purple-cont: #e9ddff;
+  --purple-soft: #f3e8fd;
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 28px;
+  --maxw: 1120px;
+  --appbar-h: 64px;
+  --nav-h: 64px;
+  --shadow-1: 0 1px 2px rgba(60,64,67,.20), 0 1px 3px 1px rgba(60,64,67,.08);
+  --font: "Roboto", "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+  --font-zh: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --domain: var(--blue); --domain-cont: var(--blue-cont); --domain-soft: var(--blue-soft);
+  color-scheme: light;
+}
+:root:not([data-theme="light"]) { }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121417; --surface: #1b1e22; --surface-1: #1f2327; --surface-2: #262a30; --surface-3: #2e333a;
+    --outline: #3c4043; --outline-soft: #2c3034;
+    --on-surface: #e8eaed; --on-surface-2: #c4c7c5; --on-surface-3: #9aa0a6;
+    --blue: #a8c7fa; --blue-text: #8ab4f8; --blue-cont: #0842a0; --blue-soft: #1f2d45;
+    --green: #6dd58c; --green-cont: #0f5223; --green-soft: #1d3326;
+    --red: #f2b8b5; --red-cont: #8c1d18; --red-soft: #3b2426;
+    --yellow: #ffd86b; --yellow-cont: #5c3d00; --yellow-soft: #3a2f16;
+    --purple: #d0bcff; --purple-cont: #4f378b; --purple-soft: #2e2640;
+    --shadow-1: 0 1px 2px rgba(0,0,0,.5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121417; --surface: #1b1e22; --surface-1: #1f2327; --surface-2: #262a30; --surface-3: #2e333a;
+  --outline: #3c4043; --outline-soft: #2c3034;
+  --on-surface: #e8eaed; --on-surface-2: #c4c7c5; --on-surface-3: #9aa0a6;
+  --blue: #a8c7fa; --blue-text: #8ab4f8; --blue-cont: #0842a0; --blue-soft: #1f2d45;
+  --green: #6dd58c; --green-cont: #0f5223; --green-soft: #1d3326;
+  --red: #f2b8b5; --red-cont: #8c1d18; --red-soft: #3b2426;
+  --yellow: #ffd86b; --yellow-cont: #5c3d00; --yellow-soft: #3a2f16;
+  --purple: #d0bcff; --purple-cont: #4f378b; --purple-soft: #2e2640;
+  --shadow-1: 0 1px 2px rgba(0,0,0,.5);
+  color-scheme: dark;
+}
+[data-domain="zh"] { --domain: var(--red); --domain-cont: var(--red-cont); --domain-soft: var(--red-soft); }
+[data-domain="en"] { --domain: var(--blue); --domain-cont: var(--blue-cont); --domain-soft: var(--blue-soft); }
+[data-domain="interview"] { --domain: var(--purple); --domain-cont: var(--purple-cont); --domain-soft: var(--purple-soft); }

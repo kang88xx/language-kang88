@@ -1,0 +1,8 @@
+[
+ { "id": "loop-in", "phrase": "keep someone in the loop", "ko": "~에게 계속 상황을 공유하다", "example": "Please keep me in the loop on the migration.", "register": "business", "tags": ["work"], "added": "2026-11-03" },
+ { "id": "touch-base", "phrase": "touch base", "ko": "잠깐 연락해서 상황을 맞추다", "example": "Let's touch base on Friday.", "register": "business", "tags": ["work"], "added": "2026-11-03" },
+ { "id": "on-the-same-page", "phrase": "be on the same page", "ko": "같은 이해를 공유하다", "example": "I want to make sure we're on the same page.", "register": "neutral", "tags": ["work"], "added": "2026-11-03" },
+ { "id": "walk-through", "phrase": "walk someone through", "ko": "차근차근 설명해 주다", "example": "Can you walk me through the deployment process?", "register": "neutral", "tags": ["work", "tech"], "added": "2026-11-03" },
+ { "id": "take-ownership", "phrase": "take ownership of", "ko": "책임지고 맡다", "example": "I took ownership of the payment module.", "register": "business", "tags": ["interview"], "added": "2026-11-03" },
+ { "id": "hindsight", "phrase": "in hindsight", "ko": "돌이켜 보면", "example": "In hindsight, we should have tested earlier.", "register": "neutral", "tags": ["interview"], "added": "2026-11-03" }
+]

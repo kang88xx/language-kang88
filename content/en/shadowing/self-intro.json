@@ -1,0 +1,11 @@
+{
+ "title": "자기소개 기본 문장",
+ "source": "sample",
+ "sentences": [
+  { "en": "I'm a software engineer with about ten years of experience in web services.", "ko": "저는 웹 서비스 분야에서 약 10년 경력의 소프트웨어 엔지니어입니다." },
+  { "en": "Most recently, I led the migration of a legacy monolith to a service-based architecture.", "ko": "가장 최근에는 레거시 모놀리스를 서비스 기반 아키텍처로 옮기는 작업을 이끌었습니다." },
+  { "en": "What I enjoy most is turning vague requirements into something people actually use.", "ko": "제가 가장 즐기는 일은 막연한 요구사항을 사람들이 실제로 쓰는 것으로 만드는 일입니다." },
+  { "en": "I'm looking for a team where I can own a product end to end.", "ko": "제품을 처음부터 끝까지 책임질 수 있는 팀을 찾고 있습니다." },
+  { "en": "Outside of work, I've been studying Chinese over the phone every morning.", "ko": "일 외에는 매일 아침 전화로 중국어를 공부하고 있습니다." }
+ ]
+}

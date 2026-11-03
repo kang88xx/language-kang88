@@ -1,0 +1,12 @@
+[
+ { "id": "handover", "word": "handover", "ipa": "/ˈhændˌoʊvər/", "ko": "인수인계", "example": "I prepared a handover document for my replacement.", "tags": ["work"], "added": "2026-11-03" },
+ { "id": "notice-period", "word": "notice period", "ko": "퇴직 통보 기간", "example": "My notice period is one month.", "tags": ["work"], "added": "2026-11-03" },
+ { "id": "severance", "word": "severance pay", "ipa": "/ˈsevərəns/", "ko": "퇴직금", "example": "The company offered two months of severance pay.", "tags": ["work", "money"], "added": "2026-11-03" },
+ { "id": "resign", "word": "resign", "ipa": "/rɪˈzaɪn/", "ko": "사직하다", "example": "She decided to resign after five years.", "tags": ["work"], "added": "2026-11-03" },
+ { "id": "colleague", "word": "colleague", "ipa": "/ˈkɑːliːɡ/", "ko": "동료", "example": "I had lunch with a colleague from the design team.", "tags": ["work"], "added": "2026-11-03" },
+ { "id": "deadline", "word": "deadline", "ko": "마감", "example": "We are working against a tight deadline.", "tags": ["work"], "added": "2026-11-03" },
+ { "id": "trade-off", "word": "trade-off", "ko": "절충, 맞교환", "example": "There is a trade-off between speed and quality.", "tags": ["tech"], "added": "2026-11-03" },
+ { "id": "bottleneck", "word": "bottleneck", "ko": "병목", "example": "The database became the bottleneck.", "tags": ["tech"], "added": "2026-11-03" },
+ { "id": "haircut", "word": "get a haircut", "ko": "머리를 자르다", "example": "I need to get a haircut before the interview.", "tags": ["daily"], "added": "2026-11-03" },
+ { "id": "fresh-start", "word": "fresh start", "ko": "새 출발", "example": "Moving to a new city gave me a fresh start.", "tags": ["daily"], "added": "2026-11-03" }
+]

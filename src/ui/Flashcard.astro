@@ -1,0 +1,11 @@
+---
+import type { Item, Domain } from '../core/items.ts';
+interface Props { items: Item[]; domain: Domain }
+const { items, domain } = Astro.props;
+---
+<div class="fc" data-domain={domain}>
+  <script type="application/json" set:html={JSON.stringify(items).replace(/</g, '\\u003c')} />
+  <div class="fc-view"><div class="empty">불러오는 중…</div></div>
+  <p class="small muted" style="text-align:center;margin-top:16px">키보드: Space 정답 · 1~4 평가. 진도는 이 브라우저에 저장되며 설정에서 내보낼 수 있습니다.</p>
+</div>
+<script src="../modules/review.ts"></script>

@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+const [zhV, zhL, zhF, enV, enE, enS, iq] = await Promise.all([
+  getCollection('zhVocab'), getCollection('zhLessons'), getCollection('zhFixes'),
+  getCollection('enVocab'), getCollection('enExpressions'), getCollection('enShadowing'), getCollection('interviewQuestions'),
+]);
+const zhSent = zhL.reduce((a, l) => a + l.data.items.length, 0);
+const enSent = enS.reduce((a, s) => a + s.data.sentences.length, 0);
+const cards = [
+  { d: 'zh', title: '중국어', sub: '전화중국어 수업 기록', line: `수업 ${zhL.length}회 · 단어 ${zhV.length} · 문장 ${zhSent} · 교정 ${zhF.length}`, mark: '中' },
+  { d: 'en', title: '영어', sub: '단어 · 표현 · 쉐도잉', line: `단어 ${enV.length} · 표현 ${enE.length} · 쉐도잉 문장 ${enSent}`, mark: 'En' },
+  { d: 'interview', title: '면접', sub: '질문 은행 · 연습 모드', line: `질문 ${iq.length} · 답변은 이 브라우저에만 저장`, mark: '面' },
+];
+---
+<Base title="홈">
+  <div class="page-head"><h1>오늘 학습</h1><span class="sub">{new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })}</span></div>
+  <div class="stats" style="margin-bottom:20px">
+    <div class="card stat"><span class="v"><span data-due="">–</span><small>장</small></span><span class="l">복습 대기</span></div>
+    <div class="card stat"><span class="v"><span data-today>–</span><small>장</small></span><span class="l">오늘 복습</span></div>
+    <div class="card stat"><span class="v"><span data-streak>–</span><small>일</small></span><span class="l">연속 학습</span></div>
+    <div class="card stat"><span class="v"><span data-learned>–</span><small>장</small></span><span class="l">학습한 카드</span></div>
+  </div>
+  <div class="grid" style="margin-bottom:20px">
+    {cards.map((c) => (
+      <a class="card link" href={`/${c.d}/`} data-domain={c.d}>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><span class="brand-mark" aria-hidden="true">{c.mark}</span><div><h2 style="margin:0">{c.title}</h2><div class="muted small">{c.sub}</div></div></div>
+        <div class="small">{c.line}</div>
+        <div class="small" style="margin-top:8px">복습 대기 <strong data-due={c.d}>–</strong>장</div>
+      </a>
+    ))}
+  </div>
+  <div class="card outlined">
+    <h2>최근 16주</h2>
+    <div class="heat" data-weeks="16" aria-label="일별 복습 수 히트맵"></div>
+  </div>
+  <script src="../modules/hub.ts"></script>
+</Base>
