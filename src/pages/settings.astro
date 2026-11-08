@@ -3,23 +3,23 @@ import Base from '../layouts/Base.astro';
 ---
 <Base title="설정">
   <h1>설정</h1>
-  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));align-items:start">
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));align-items:start">
     <div class="card">
       <h2>진도 백업</h2>
       <p class="small">이 브라우저에 저장된 카드 <strong data-n-cards>0</strong>장 · 복습 기록 <strong data-n-reviews>0</strong>건 · 면접 답변 <strong data-n-answers>0</strong>건</p>
       <div class="btn-row"><button class="btn btn-filled" data-export>JSON 내보내기</button></div>
       <h3 style="margin-top:16px">가져오기</h3>
-      <div class="toolbar"><select name="mode"><option value="merge">병합 (권장)</option><option value="replace">교체</option></select><input type="file" accept="application/json" data-import /></div>
+      <div class="toolbar"><select name="mode" aria-label="진도 가져오기 방식"><option value="merge">병합 (권장)</option><option value="replace">교체</option></select><input type="file" accept="application/json" aria-label="진도 백업 파일" data-import /></div>
       <p class="small muted" data-status></p>
       <button class="btn btn-quiet" data-clear style="color:var(--red)">모든 진도 지우기</button>
     </div>
     <div class="card">
       <h2>학습</h2>
-      <label class="small muted">하루 새 카드 수</label><input type="text" inputmode="numeric" name="newLimit" />
-      <label class="small muted" style="display:block;margin-top:12px">테마</label>
-      <select name="theme"><option value="auto">시스템</option><option value="light">밝게</option><option value="dark">어둡게</option></select>
-      <label class="small muted" style="display:block;margin-top:12px">영어 음성</label><select name="voiceEn"></select>
-      <label class="small muted" style="display:block;margin-top:12px">중국어 음성</label><select name="voiceZh"></select>
+      <label class="small muted" for="newLimit">하루 새 카드 수</label><input type="text" inputmode="numeric" name="newLimit" id="newLimit" />
+      <label class="small muted" for="theme" style="display:block;margin-top:12px">테마</label>
+      <select name="theme" id="theme"><option value="auto">시스템</option><option value="light">밝게</option><option value="dark">어둡게</option></select>
+      <label class="small muted" for="voiceEn" style="display:block;margin-top:12px">영어 음성</label><select name="voiceEn" id="voiceEn"></select>
+      <label class="small muted" for="voiceZh" style="display:block;margin-top:12px">중국어 음성</label><select name="voiceZh" id="voiceZh"></select>
     </div>
   </div>
   <script src="../modules/settings.ts"></script>

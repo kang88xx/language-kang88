@@ -3,18 +3,82 @@ import Base from '../../layouts/Base.astro';
 import { NAV } from '../../ui/nav.ts';
 import { getCollection } from 'astro:content';
 const [v, e, s] = await Promise.all([getCollection('enVocab'), getCollection('enExpressions'), getCollection('enShadowing')]);
+const activities = [
+  { href: '/en/vocab/', mark: 'Aa', title: '단어장', description: '뜻과 예문을 함께 익혀요.', count: v.length, unit: '개 단어', action: '단어 학습하기' },
+  { href: '/en/expressions/', mark: '“ ”', title: '표현', description: '상황에 맞는 표현을 익혀요.', count: e.length, unit: '개 표현', action: '표현 살펴보기' },
+  { href: '/en/shadowing/', mark: '♪', title: '쉐도잉', description: '듣고 따라 하며 말하기를 연습해요.', count: s.reduce((a, x) => a + x.data.sentences.length, 0), unit: `문장 · ${s.length}세트`, action: '쉐도잉 시작하기' },
+];
 ---
 <Base title="영어" domain="en" nav={[...NAV.en]}>
-  <div class="page-head"><h1>영어 대시보드</h1><span class="sub">샘플 데이터 · content/en 에서 편집</span></div>
-  <div class="stats" style="margin-bottom:20px">
-    <div class="card stat"><span class="v">{v.length}<small>개</small></span><span class="l"><a href="/en/vocab/">단어</a></span></div>
-    <div class="card stat"><span class="v">{e.length}<small>개</small></span><span class="l"><a href="/en/expressions/">표현</a></span></div>
-    <div class="card stat"><span class="v">{s.reduce((a, x) => a + x.data.sentences.length, 0)}<small>문장</small></span><span class="l"><a href="/en/shadowing/">쉐도잉 {s.length}세트</a></span></div>
-    <div class="card stat"><span class="v"><span data-due="en">–</span><small>장</small></span><span class="l">복습 대기 · <a href="/en/review/">복습하기</a></span></div>
-  </div>
-  <div class="card outlined">
-    <h2>단어 추가하는 법</h2>
-    <p class="small">아직 입력 폼은 없습니다. <code>content/en/vocab.json</code>, <code>expressions.json</code>, <code>shadowing/*.json</code> 을 편집하고 푸시하면 반영됩니다. PLAN.md 2단계에서 브라우저 입력 큐를 추가할 예정입니다.</p>
-  </div>
+  <div class="page-head dashboard-intro"><div><h1>영어</h1><p class="sub">단어에서 문장으로, 읽기에서 말하기로.</p></div></div>
+
+  <section class="study-panel review-overview" aria-labelledby="review-title">
+    <div>
+      <span class="eyebrow">오늘의 복습</span>
+      <h2 id="review-title">배운 표현을 다시 만나보세요.</h2>
+      <p class="muted">단어와 표현을 카드로 복습할 수 있어요.</p>
+      <a class="btn btn-filled" href="/en/review/">영어 복습하기 <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="review-total"><span class="small muted">복습 대기</span><div><strong data-due="en">–</strong><span>장</span></div></div>
+  </section>
+
+  <section class="dashboard-section" aria-labelledby="activities-title">
+    <div class="section-head"><h2 id="activities-title">나의 학습 자료</h2><span class="small muted">단어 · 표현 · 쉐도잉</span></div>
+    <div class="grid activity-grid">
+      {activities.map((activity) => <a class="card link activity-card" href={activity.href}>
+        <span class="activity-mark" aria-hidden="true">{activity.mark}</span>
+        <div><h3>{activity.title}</h3><p class="small muted">{activity.description}</p></div>
+        <div class="activity-count"><strong>{activity.count}</strong><span class="small muted">{activity.unit}</span></div>
+        <span class="activity-action">{activity.action} <span aria-hidden="true">→</span></span>
+      </a>)}
+    </div>
+  </section>
+
+  <details class="study-panel content-note">
+    <summary>샘플 데이터 · 학습 자료 추가 안내</summary>
+    <div>
+      <h2>단어 추가하는 법</h2>
+      <p class="small muted">현재 샘플 데이터로 구성되어 있으며, 아직 입력 폼은 없습니다. <code>content/en/vocab.json</code>, <code>expressions.json</code>, <code>shadowing/*.json</code>을 편집하고 푸시하면 반영됩니다. PLAN.md 2단계에서 브라우저 입력 큐를 추가할 예정입니다.</p>
+    </div>
+  </details>
   <script src="../../modules/hub.ts"></script>
 </Base>
+
+<style>
+  .dashboard-intro p { margin: 8px 0 0; }
+  .review-overview { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 32px; background: var(--domain-soft); border-color: var(--domain-cont); }
+  .review-overview h2 { margin: 10px 0; font-size: clamp(1.3rem, 2vw, 1.65rem); }
+  .review-overview p { margin-bottom: 24px; }
+  .review-total { min-width: 120px; padding-left: 24px; border-left: 1px solid var(--domain-cont); }
+  .review-total > .small { white-space: nowrap; }
+  .review-total > div { display: flex; align-items: baseline; gap: 8px; color: var(--on-surface-3); }
+  .review-total strong { color: var(--domain); font-size: 3.5rem; font-weight: 700; line-height: 1.3; }
+  .dashboard-section { margin-top: 32px; }
+  .activity-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .activity-card { display: flex; flex-direction: column; gap: 20px; padding: 24px; }
+  .activity-mark { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; color: var(--domain); background: var(--domain-soft); font-size: 1.25rem; font-weight: 500; }
+  .activity-card h3 { font-size: 1.1rem; margin-bottom: 8px; }
+  .activity-card p { margin: 0; }
+  .activity-count { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+  .activity-count strong { font-size: 1.75rem; font-weight: 700; }
+  .activity-action { display: flex; justify-content: space-between; gap: 8px; padding-top: 16px; border-top: 1px solid var(--outline-soft); font-size: .85rem; color: var(--domain); }
+  .content-note { margin-top: 28px; padding: 0; }
+  .content-note summary { cursor: pointer; padding: 18px 24px; font-size: .85rem; color: var(--on-surface-3); }
+  .content-note > div { padding: 0 24px 16px; }
+  .content-note h2 { font-size: 1rem; }
+  .content-note code { overflow-wrap: anywhere; }
+  @media (max-width: 680px) {
+    .review-overview { align-items: flex-start; padding: 24px; gap: 16px; }
+    .review-total { min-width: 64px; padding-left: 16px; }
+    .review-total strong { font-size: 2.5rem; }
+    .activity-grid { grid-template-columns: minmax(0, 1fr); }
+    .activity-card { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 16px; padding: 20px; }
+    .activity-count { grid-column: 2; }
+    .activity-action { grid-column: 1 / -1; }
+  }
+  @media (max-width: 360px) {
+    .review-overview { flex-direction: column; }
+    .review-total { display: flex; align-items: baseline; gap: 12px; padding: 0; border: 0; }
+    .review-total strong { font-size: 1.5rem; }
+  }
+</style>

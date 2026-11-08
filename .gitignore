@@ -26,3 +26,6 @@ pnpm-debug.log*
 # screenshots / local
 *.png
 .omc/
+
+# omx / omc runtime state
+.omx/

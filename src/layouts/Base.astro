@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import Icon from '../ui/Icon.astro';
 import type { Domain } from '../core/items.ts';
 import { DOMAIN_LABEL } from '../core/items.ts';
 
@@ -9,7 +10,8 @@ const { title, domain, nav = [], description = '개인 학습: 영어 · 중국�
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isCurrent = (href: string) => (href.replace(/\/$/, '') || '/') === path;
 const domains: Domain[] = ['zh', 'en', 'interview'];
-const mark = domain === 'zh' ? '中' : domain === 'en' ? 'En' : domain === 'interview' ? '面' : '學';
+const marks = { zh: '中', en: 'En', interview: '面' };
+const sectionIcon = (href: string) => href.includes('/review') ? 'review' : href.includes('/practice') ? 'play' : href.includes('/shadowing') ? 'audio' : href.includes('/fixes') ? 'edit' : href.includes('/lessons') ? 'list' : href.includes('/vocab') || href.includes('/expressions') ? 'book' : 'home';
 ---
 <!doctype html>
 <html lang="ko" data-domain={domain}>
@@ -27,29 +29,53 @@ const mark = domain === 'zh' ? '中' : domain === 'en' ? 'En' : domain === 'inte
       try { const t = JSON.parse(localStorage.getItem('lang.v1.settings') || '{}').theme; if (t && t !== 'auto') document.documentElement.dataset.theme = t; } catch {}
     </script>
   </head>
-  <body>
+  <body class:list={{ 'has-section-nav': nav.length > 0 }}>
     <a class="skip" href="#main">본문으로 건너뛰기</a>
-    <header class="appbar">
-      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">{mark}</span><span>學 study</span></a>
-      <nav class="domain-tabs" aria-label="학습 영역">
-        {domains.map((d) => <a href={`/${d}/`} aria-current={domain === d ? 'true' : undefined}>{DOMAIN_LABEL[d]}</a>)}
+    <aside class="sidebar" aria-label="학습 공간 메뉴">
+      <a class="brand" href="/" aria-label="學 study 홈"><span class="brand-mark" aria-hidden="true">學</span><span class="brand-word">study<span class="brand-caption">나의 학습 공간</span></span></a>
+      <nav class="side-nav" aria-label="주 메뉴">
+        <a class="side-link home-link" href="/" aria-current={isCurrent('/') ? 'page' : undefined}><Icon name="home" /><span>오늘 학습</span></a>
+        <p class="nav-label">학습 공간</p>
+        {domains.map((d) => <a class="side-link" href={`/${d}/`} data-domain={d} aria-current={domain === d ? 'true' : undefined}><span class="subject-mark" aria-hidden="true">{marks[d]}</span><span>{DOMAIN_LABEL[d]}</span></a>)}
       </nav>
-      <div class="appbar-right">
-        <a class="icon-btn" href="/settings/" title="설정" aria-label="설정">⚙</a>
+      <div class="sidebar-bottom">
+        <a class="side-link" href="/settings/" aria-current={isCurrent('/settings/') ? 'page' : undefined}><Icon name="settings" /><span>설정 및 백업</span></a>
+        <p class="storage-note"><span aria-hidden="true"></span>기록은 이 브라우저에 저장돼요</p>
       </div>
-    </header>
-    <main id="main">
-      {nav.length > 0 && (
-        <ul class="subnav" aria-label="섹션">
-          {nav.map((n) => <li><a href={n.href} aria-current={isCurrent(n.href) ? 'page' : undefined}>{n.label}</a></li>)}
-        </ul>
-      )}
-      <slot />
-    </main>
+    </aside>
+    <div class="app-content">
+      <header class="appbar">
+        <a class="brand mobile-brand" href="/" aria-label="學 study 홈"><span class="brand-mark" aria-hidden="true">學</span><span class="brand-word">study</span></a>
+        <div class="breadcrumb"><a href="/">내 학습 공간</a><span aria-hidden="true">/</span><span>{domain ? DOMAIN_LABEL[domain] : title === '홈' ? '오늘 학습' : title}</span></div>
+        <div class="appbar-right">
+          {path !== '/' && <time class="shell-date" data-shell-date></time>}
+          <a class="icon-btn mobile-settings" href="/settings/" title="설정" aria-label="설정"><Icon name="settings" /></a>
+        </div>
+        <nav class="domain-tabs" aria-label="학습 영역">
+          {domains.map((d) => <a href={`/${d}/`} data-domain={d} aria-current={domain === d ? 'true' : undefined}>{DOMAIN_LABEL[d]}</a>)}
+        </nav>
+      </header>
+      <main id="main" tabindex="-1">
+        {nav.length > 0 && (
+          <nav class="section-navigation" aria-label="섹션">
+            <ul class="subnav">{nav.map((n) => <li><a href={n.href} aria-current={isCurrent(n.href) ? 'page' : undefined}>{n.label}</a></li>)}</ul>
+          </nav>
+        )}
+        <slot />
+      </main>
+    </div>
     {nav.length > 0 && (
       <nav class="bottomnav" aria-label="섹션 (모바일)">
-        {nav.map((n) => <a href={n.href} aria-current={isCurrent(n.href) ? 'page' : undefined}><span class="ico" aria-hidden="true">{n.icon}</span>{n.label}</a>)}
+        {nav.map((n) => <a href={n.href} aria-current={isCurrent(n.href) ? 'page' : undefined}><span class="ico"><Icon name={sectionIcon(n.href)} size={20} /></span>{n.label}</a>)}
       </nav>
     )}
+    <script>
+      const date = document.querySelector<HTMLTimeElement>('[data-shell-date]');
+      if (date) {
+        const now = new Date();
+        date.dateTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        date.textContent = now.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'long' });
+      }
+    </script>
   </body>
 </html>

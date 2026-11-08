@@ -7,32 +7,178 @@ const [zhV, zhL, zhF, enV, enE, enS, iq] = await Promise.all([
 ]);
 const zhSent = zhL.reduce((a, l) => a + l.data.items.length, 0);
 const enSent = enS.reduce((a, s) => a + s.data.sentences.length, 0);
-const cards = [
-  { d: 'zh', title: '중국어', sub: '전화중국어 수업 기록', line: `수업 ${zhL.length}회 · 단어 ${zhV.length} · 문장 ${zhSent} · 교정 ${zhF.length}`, mark: '中' },
-  { d: 'en', title: '영어', sub: '단어 · 표현 · 쉐도잉', line: `단어 ${enV.length} · 표현 ${enE.length} · 쉐도잉 문장 ${enSent}`, mark: 'En' },
-  { d: 'interview', title: '면접', sub: '질문 은행 · 연습 모드', line: `질문 ${iq.length} · 답변은 이 브라우저에만 저장`, mark: '面' },
+const spaces = [
+  { d: 'zh', title: '중국어', native: '中文', sub: '전화중국어 수업 기록', mark: '中',
+    counts: [{ label: '수업', value: `${zhL.length}회` }, { label: '단어', value: `${zhV.length}개` }, { label: '문장', value: `${zhSent}개` }, { label: '교정', value: `${zhF.length}건` }] },
+  { d: 'en', title: '영어', native: 'English', sub: '단어 · 표현 · 쉐도잉', mark: 'Aa',
+    counts: [{ label: '단어', value: `${enV.length}개` }, { label: '표현', value: `${enE.length}개` }, { label: '쉐도잉 문장', value: `${enSent}개` }] },
+  { d: 'interview', title: '면접', native: 'Interview', sub: '질문 은행 · 연습 모드', mark: '面',
+    counts: [{ label: '질문', value: `${iq.length}개` }], note: '답변은 이 브라우저에만 저장돼요.' },
 ];
 ---
-<Base title="홈">
-  <div class="page-head"><h1>오늘 학습</h1><span class="sub">{new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })}</span></div>
-  <div class="stats" style="margin-bottom:20px">
-    <div class="card stat"><span class="v"><span data-due="">–</span><small>장</small></span><span class="l">복습 대기</span></div>
-    <div class="card stat"><span class="v"><span data-today>–</span><small>장</small></span><span class="l">오늘 복습</span></div>
-    <div class="card stat"><span class="v"><span data-streak>–</span><small>일</small></span><span class="l">연속 학습</span></div>
-    <div class="card stat"><span class="v"><span data-learned>–</span><small>장</small></span><span class="l">학습한 카드</span></div>
+<Base title="오늘 학습">
+  <div class="home-heading">
+    <div><p class="home-overline">나만의 학습 공간</p><h1>오늘의 학습</h1><p class="muted">조금씩, 꾸준히. 오늘의 한 걸음을 시작해 보세요.</p></div>
+    <time class="home-date" data-home-date></time>
   </div>
-  <div class="grid" style="margin-bottom:20px">
-    {cards.map((c) => (
-      <a class="card link" href={`/${c.d}/`} data-domain={c.d}>
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px"><span class="brand-mark" aria-hidden="true">{c.mark}</span><div><h2 style="margin:0">{c.title}</h2><div class="muted small">{c.sub}</div></div></div>
-        <div class="small">{c.line}</div>
-        <div class="small" style="margin-top:8px">복습 대기 <strong data-due={c.d}>–</strong>장</div>
-      </a>
-    ))}
-  </div>
-  <div class="card outlined">
-    <h2>최근 16주</h2>
-    <div class="heat" data-weeks="16" aria-label="일별 복습 수 히트맵"></div>
-  </div>
+
+  <section class="daily-layout" aria-label="오늘의 학습 요약">
+    <div class="review-spotlight">
+      <div class="spotlight-copy">
+        <span class="spotlight-label">오늘의 복습</span>
+        <h2 data-review-heading>배운 것을<br />내 것으로 만드는 시간.</h2>
+        <p data-review-description>새 카드로 오늘의 학습을 시작해 보세요.</p>
+        <a class="btn btn-filled review-start" href="/zh/review/" data-review-start>
+          <span data-review-label>중국어 학습 시작</span><span aria-hidden="true">↗</span>
+        </a>
+      </div>
+      <div class="due-summary"><span class="due-label">복습 대기</span><div><strong data-due="">–</strong><span>장</span></div><span class="due-caption" data-review-caption>나의 복습 카드</span></div>
+    </div>
+    <div class="study-summary">
+      <h2>나의 기록</h2>
+      <dl>
+        <div><dt>오늘 복습</dt><dd><strong data-today>–</strong><span>장</span></dd></div>
+        <div><dt>연속 학습</dt><dd><strong data-streak>–</strong><span>일</span></dd></div>
+        <div><dt>학습한 카드</dt><dd><strong data-learned>–</strong><span>장</span></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="spaces-section" aria-labelledby="spaces-title">
+    <div class="section-head"><h2 id="spaces-title">나의 학습 공간</h2><span class="muted small">중국어 · 영어 · 면접</span></div>
+    <div class="space-grid">
+      {spaces.map((space) => (
+        <a class="space-card" href={`/${space.d}/`} data-domain={space.d}>
+          <div class="space-header"><span class="space-mark" aria-hidden="true">{space.mark}</span><span class="space-native">{space.native}</span></div>
+          <h3>{space.title}</h3><p class="space-description">{space.sub}</p>
+          <div class="space-content">
+            <dl class="space-counts">{space.counts.map((count) => <div><dt>{count.label}</dt><dd>{count.value}</dd></div>)}</dl>
+            {space.note && <p class="space-note">{space.note}</p>}
+          </div>
+          <div class="space-footer"><span>복습 대기 <strong data-due={space.d}>–</strong>장</span><span class="space-enter">학습하기 <span aria-hidden="true">↗</span></span></div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="activity-panel" aria-labelledby="activity-title">
+    <div class="section-head"><div><h2 id="activity-title">학습 기록</h2><p class="small muted" data-activity-summary>첫 복습을 마치면 이곳에 기록이 쌓여요.</p></div><span class="activity-period">최근 16주</span></div>
+    <div class="activity-content">
+      <div class="activity-calendar">
+        <div class="heat-months" data-heat-months aria-hidden="true"></div>
+        <div class="heat-body"><div class="heat-days" aria-hidden="true"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div><div class="heat" data-weeks="16" role="img" aria-label="최근 16주 일별 복습 기록"></div></div>
+      </div>
+      <div class="activity-note"><span class="activity-note-label">하루하루 쌓이는 배움</span><p>복습을 마친 날마다<br />나의 기록이 채워져요.</p><div class="heat-legend" aria-label="색이 진할수록 복습 횟수가 많습니다"><span>적음</span><i data-l="0"></i><i data-l="1"></i><i data-l="2"></i><i data-l="3"></i><span>많음</span></div></div>
+    </div>
+  </section>
   <script src="../modules/hub.ts"></script>
 </Base>
+
+<style>
+  .home-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+  .home-overline { color: var(--on-surface-3); font-size: .78rem; font-weight: 500; margin-bottom: 8px; }
+  .home-heading h1 { font-size: clamp(1.8rem, 3vw, 2.15rem); font-weight: 700; letter-spacing: -.045em; margin-bottom: 10px; }
+  .home-heading p:last-child { margin: 0; font-size: .9rem; }
+  .home-date { color: var(--on-surface-3); font-size: .85rem; white-space: nowrap; align-self: flex-start; padding-top: 6px; }
+  .daily-layout { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(230px, 1fr); gap: 20px; margin-bottom: 36px; }
+  .review-spotlight { background: var(--blue-soft); border: 1px solid var(--blue-cont); border-radius: var(--r-lg); display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 28px 32px; }
+  .spotlight-label { display: block; color: var(--blue); font-size: .8rem; font-weight: 700; margin-bottom: 14px; }
+  .spotlight-copy h2 { font-size: clamp(1.45rem, 2.4vw, 1.75rem); line-height: 1.45; letter-spacing: -.035em; font-weight: 700; margin-bottom: 12px; }
+  .spotlight-copy p { font-size: .82rem; color: var(--on-surface-2); margin-bottom: 22px; max-width: 32ch; }
+  .review-start { gap: 22px; font-size: .86rem; }
+  .review-start > span:last-child { font-size: 1.2rem; }
+  .due-summary { flex-shrink: 0; color: var(--blue); text-align: center; padding: 16px 0 16px 28px; border-left: 1px solid var(--blue-cont); }
+  .due-label { font-size: .8rem; font-weight: 500; }
+  .due-summary > div { display: flex; align-items: baseline; justify-content: center; gap: 5px; margin: 7px 0; }
+  .due-summary strong { font-size: clamp(3rem, 4.5vw, 4.5rem); font-weight: 500; line-height: 1.1; letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
+  .due-summary > div > span { font-size: .9rem; }
+  .due-caption { display: block; font-size: .72rem; max-width: 15ch; }
+  .study-summary { border: 1px solid var(--outline-soft); border-radius: var(--r-lg); background: var(--surface); padding: 24px; }
+  .study-summary h2 { font-size: .9rem; font-weight: 500; margin-bottom: 12px; }
+  .study-summary dl { margin: 0; }
+  .study-summary dl > div { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 13px 0; border-bottom: 1px solid var(--outline-soft); }
+  .study-summary dl > div:last-child { border: 0; padding-bottom: 0; }
+  .study-summary dt { color: var(--on-surface-3); font-size: .82rem; }
+  .study-summary dd { margin: 0; white-space: nowrap; }
+  .study-summary dd strong { font-size: 1.45rem; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .study-summary dd span { margin-left: 5px; font-size: .8rem; color: var(--on-surface-3); }
+  .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+  .section-head h2 { font-size: 1.05rem; font-weight: 700; margin: 0; letter-spacing: -.025em; }
+  .spaces-section { margin-bottom: 32px; }
+  .space-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+  .space-card { display: flex; flex-direction: column; min-width: 0; padding: 23px; border: 1px solid var(--outline-soft); border-radius: var(--r-lg); background: var(--surface); color: var(--on-surface); transition: border-color .15s, box-shadow .15s; }
+  .space-card:hover { text-decoration: none; border-color: var(--domain); box-shadow: var(--shadow-1); }
+  .space-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .space-mark { display: grid; place-items: center; width: 46px; height: 46px; background: var(--domain-soft); color: var(--domain); border-radius: var(--r-md); font-size: 1.45rem; font-weight: 500; }
+  .space-native { color: var(--on-surface-3); font-size: .74rem; letter-spacing: .015em; }
+  .space-card h3 { font-size: 1.12rem; font-weight: 700; margin-bottom: 6px; }
+  .space-description { font-size: .8rem; color: var(--on-surface-3); margin-bottom: 20px; }
+  .space-content { flex: 1; min-height: 68px; }
+  .space-counts { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0; }
+  .space-counts > div { display: flex; align-items: baseline; gap: 6px; font-size: .78rem; }
+  .space-counts dt { color: var(--on-surface-3); }
+  .space-counts dd { margin: 0; font-weight: 500; }
+  .space-note { color: var(--on-surface-3); font-size: .72rem; margin-top: 12px; }
+  .space-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--outline-soft); font-size: .75rem; }
+  .space-footer > span:first-child { color: var(--on-surface-3); }
+  .space-footer strong { color: var(--on-surface); font-weight: 500; }
+  .space-enter { color: var(--domain); font-weight: 500; white-space: nowrap; }
+  .space-enter > span { margin-left: 6px; }
+  .activity-panel { background: var(--surface); border: 1px solid var(--outline-soft); border-radius: var(--r-lg); padding: 24px 28px; }
+  .activity-panel .section-head { align-items: flex-start; margin-bottom: 22px; }
+  .activity-panel .section-head p { margin: 8px 0 0; font-size: .78rem; }
+  .activity-period { color: var(--on-surface-3); font-size: .76rem; white-space: nowrap; }
+  .activity-content { display: grid; grid-template-columns: minmax(0, 1fr) minmax(160px, .45fr); gap: 40px; align-items: center; }
+  .activity-calendar { min-width: 0; max-width: 520px; }
+  .heat-months { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); margin: 0 0 7px 24px; color: var(--on-surface-3); font-size: .65rem; }
+  .heat-months :global(span) { white-space: nowrap; }
+  .heat-body { display: flex; gap: 10px; }
+  .heat-days { display: grid; grid-template-rows: repeat(7, 13px); gap: 4px; width: 14px; flex-shrink: 0; font-size: .6rem; line-height: 1; color: var(--on-surface-3); text-align: center; }
+  .heat-days span { display: grid; place-items: center; }
+  .heat { flex: 1; min-width: 0; display: grid; grid-auto-flow: column; grid-template-columns: repeat(16, minmax(0, 1fr)); grid-template-rows: repeat(7, 13px); gap: 4px; }
+  .heat :global(i) { width: 100%; height: 13px; border-radius: 3px; background: var(--surface-3); }
+  .heat :global(i[data-l="1"]), .heat-legend i[data-l="1"] { background: var(--green-cont); }
+  .heat :global(i[data-l="2"]), .heat-legend i[data-l="2"] { background: var(--heat-mid); }
+  .heat :global(i[data-l="3"]), .heat-legend i[data-l="3"] { background: var(--green); }
+  .activity-note { padding-left: 28px; border-left: 1px solid var(--outline-soft); }
+  .activity-note-label { font-size: .8rem; font-weight: 500; }
+  .activity-note p { font-size: .78rem; line-height: 1.8; color: var(--on-surface-3); margin: 7px 0 20px; }
+  .heat-legend { display: flex; align-items: center; gap: 4px; font-size: .65rem; color: var(--on-surface-3); }
+  .heat-legend i { width: 11px; height: 11px; border-radius: 3px; background: var(--surface-3); }
+  .heat-legend span:first-child { margin-right: 4px; } .heat-legend span:last-child { margin-left: 4px; }
+  @media (max-width: 760px) {
+    .home-heading { margin-bottom: 22px; } .home-date { display: none; }
+    .daily-layout { grid-template-columns: 1fr; gap: 14px; margin-bottom: 28px; }
+    .review-spotlight { padding: 24px; }
+    .study-summary { padding: 18px 20px; }
+    .study-summary h2 { font-size: .8rem; margin-bottom: 14px; }
+    .study-summary dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .study-summary dl > div { display: block; padding: 0 12px; border-bottom: 0; border-right: 1px solid var(--outline-soft); }
+    .study-summary dl > div:first-child { padding-left: 0; }
+    .study-summary dl > div:last-child { padding-right: 0; }
+    .study-summary dt { font-size: .72rem; margin-bottom: 5px; }
+    .space-grid { grid-template-columns: 1fr; gap: 12px; }
+    .space-card { padding: 20px; position: relative; }
+    .space-header { margin-bottom: 14px; }
+    .space-content { min-height: 0; } .space-description { margin-bottom: 16px; }
+    .space-counts { gap: 8px 18px; }
+    .spaces-section .section-head > span { display: none; }
+    .activity-panel { padding: 22px 20px; }
+    .activity-content { display: block; }
+    .activity-note { border: 0; padding: 0; margin-top: 16px; }
+    .activity-note-label, .activity-note p { display: none; }
+    .heat-legend { justify-content: flex-end; }
+    .heat, .heat-days { gap: 3px; }
+    .heat-days { grid-template-rows: repeat(7, 12px); }
+    .heat { grid-template-rows: repeat(7, 12px); }
+    .heat :global(i) { height: 12px; }
+  }
+  @media (max-width: 380px) {
+    .review-spotlight { padding: 22px 18px; gap: 12px; }
+    .spotlight-copy h2 { font-size: 1.3rem; }
+    .due-summary { padding-left: 14px; }
+    .due-summary strong { font-size: 2.8rem; }
+    .due-caption { max-width: 10ch; font-size: .65rem; }
+    .review-start { padding-left: 12px; padding-right: 12px; gap: 10px; font-size: .78rem; }
+  }
+</style>

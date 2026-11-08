@@ -19,30 +19,96 @@ const cls = (m: Month, d: number) => {
 const latest = lessons.map((l) => l.data).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
 ---
 <Base title="중국어" domain="zh" nav={[...NAV.zh]}>
-  <div class="page-head"><h1>중국어 대시보드</h1><span class="sub">맛있는 비즈니스 중국어 LEVEL 4 · {p.start} ~ {p.end}</span></div>
-  <div class="stats" style="margin-bottom:20px">
-    <div class="card stat"><span class="v">{p.done}<small>/ {p.total}회</small></span><span class="l">진도 {p.pct}%</span></div>
-    <div class="card stat"><span class="v">{p.att}<small>회</small></span><span class="l">출석 · 결석 {p.abs} · 휴강 {p.cancel}</span></div>
-    <div class="card stat"><span class="v">{vocab.length}<small>개</small></span><span class="l">누적 단어</span></div>
-    <div class="card stat"><span class="v">{fixes.length}<small>건</small></span><span class="l">교정 표현</span></div>
-    <div class="card stat"><span class="v"><span data-due="zh">–</span><small>장</small></span><span class="l">복습 대기 · <a href="/zh/review/">복습하기</a></span></div>
+  <div class="page-head dashboard-intro">
+    <div><h1>중국어</h1><p class="sub">수업에서 배운 표현을, 나의 언어로.</p></div>
+    <a class="text-link" href="/zh/lessons/">수업기록 보기 <span aria-hidden="true">→</span></a>
   </div>
-  <h2>최근 수업</h2>
-  <div class="grid" style="margin-bottom:20px">
-    {latest.map((l) => <a class="card link" href={`/zh/lessons/#${l.date}`}><div class="small muted">{l.date} ({l.day}) · {l.n}회</div><div>{l.theme}</div></a>)}
+
+  <section class="study-panel course-overview" aria-labelledby="course-title">
+    <div class="course-progress">
+      <span class="eyebrow">나의 수업</span>
+      <h2 id="course-title">맛있는 비즈니스 중국어 <span>LEVEL 4</span></h2>
+      <p class="small muted">{p.start} ~ {p.end}</p>
+      <div class="progress-label"><span><strong>{p.done}</strong> / {p.total}회</span><span>진도 {p.pct}%</span></div>
+      <progress value={p.done} max={p.total} aria-label={`수업 진도 ${p.pct}%`}>{p.pct}%</progress>
+    </div>
+    <div class="review-entry">
+      <span class="small muted">복습 대기</span>
+      <div class="review-count"><strong data-due="zh">–</strong><span>장</span></div>
+      <a class="btn btn-filled" href="/zh/review/">중국어 복습하기 <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+  <div class="stats domain-stats">
+    <div class="card stat"><span class="l">출석</span><span class="v">{p.att}<small>회</small></span><span class="small muted">결석 {p.abs} · 휴강 {p.cancel}</span></div>
+    <a class="card stat link" href="/zh/vocab/"><span class="l">누적 단어</span><span class="v">{vocab.length}<small>개</small></span><span class="small stat-link">단어장 보기 <span aria-hidden="true">→</span></span></a>
+    <a class="card stat link" href="/zh/fixes/"><span class="l">교정 표현</span><span class="v">{fixes.length}<small>건</small></span><span class="small stat-link">교정노트 보기 <span aria-hidden="true">→</span></span></a>
   </div>
-  <h2>출석 달력</h2>
-  <div class="legend"><span><i style="background:var(--blue-cont)"></i>출석(회차)</span><span><i style="background:var(--red-cont)"></i>결석</span><span><i style="background:var(--surface-3)"></i>휴강</span><span><i style="background:var(--yellow-cont)"></i>연기</span></div>
-  <div class="cal-months">
-    {cal.months.map((m) => (
-      <div class="cal"><h3>{m.name}</h3>
-        <div class="cal-grid">
-          {WD.map((w) => <span class="wd">{w}</span>)}
-          {Array.from({ length: m.blanks }, () => <span class="d blank"></span>)}
-          {Array.from({ length: m.days }, (_, i) => { const d = i + 1; const [c, label] = cls(m as Month, d); return <span class={`d ${c}`} title={`${d}일${label ? ` · ${label}` : ''}`}>{c === 'att' ? label : d}</span>; })}
+
+  <section class="dashboard-section" aria-labelledby="recent-lessons-title">
+    <div class="section-head"><h2 id="recent-lessons-title">최근 수업</h2><a class="text-link" href="/zh/lessons/">전체 보기 <span aria-hidden="true">→</span></a></div>
+    <div class="grid recent-lessons">
+      {latest.map((l) => <a class="card link lesson-preview" href={`/zh/lessons/#${l.date}`}>
+        <div class="lesson-meta"><span>{l.date} ({l.day})</span><span>{l.n}회</span></div>
+        <h3>{l.theme}</h3>
+        <span class="small stat-link">수업 복습하기 <span aria-hidden="true">→</span></span>
+      </a>)}
+    </div>
+  </section>
+
+  <section class="dashboard-section" aria-labelledby="attendance-title">
+    <div class="section-head"><h2 id="attendance-title">출석 달력</h2><span class="small muted">수업의 발자취</span></div>
+    <div class="legend"><span><i style="background:var(--blue-cont)"></i>출석(회차)</span><span><i style="background:var(--red-cont)"></i>결석</span><span><i style="background:var(--surface-3)"></i>휴강</span><span><i style="background:var(--yellow-cont)"></i>연기</span></div>
+    <div class="cal-months">
+      {cal.months.map((m) => (
+        <div class="cal"><h3>{m.name}</h3>
+          <div class="cal-grid">
+            {WD.map((w) => <span class="wd">{w}</span>)}
+            {Array.from({ length: m.blanks }, () => <span class="d blank"></span>)}
+            {Array.from({ length: m.days }, (_, i) => { const d = i + 1; const [c, label] = cls(m as Month, d); return <span class={`d ${c}`} title={`${d}일${label ? ` · ${label}` : ''}`}>{c === 'att' ? label : d}</span>; })}
+          </div>
         </div>
-      </div>
-    ))}
-  </div>
+      ))}
+    </div>
+  </section>
   <script src="../../modules/hub.ts"></script>
 </Base>
+
+<style>
+  .dashboard-intro { justify-content: space-between; align-items: center; }
+  .dashboard-intro p { margin: 8px 0 0; }
+  .course-overview { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 40px; padding: 28px; margin-bottom: 20px; }
+  .course-progress h2 { margin: 8px 0; font-size: 1.3rem; }
+  .course-progress h2 span { display: inline-block; font-size: .8rem; font-weight: 500; color: var(--on-surface-3); }
+  .progress-label { display: flex; justify-content: space-between; gap: 12px; margin: 24px 0 8px; font-size: .85rem; color: var(--on-surface-3); }
+  .progress-label strong { font-size: 1.25rem; color: var(--on-surface); }
+  progress { display: block; width: 100%; height: 8px; border: 0; border-radius: 8px; overflow: hidden; accent-color: var(--domain); background: var(--surface-3); }
+  progress::-webkit-progress-bar { background: var(--surface-3); border-radius: 8px; }
+  progress::-webkit-progress-value { background: var(--domain); border-radius: 8px; }
+  progress::-moz-progress-bar { background: var(--domain); border-radius: 8px; }
+  .review-entry { border-left: 1px solid var(--outline-soft); padding-left: 32px; min-width: 200px; }
+  .review-count { display: flex; align-items: baseline; gap: 6px; margin: 4px 0 12px; color: var(--on-surface-3); }
+  .review-count strong { color: var(--on-surface); font-size: 2.5rem; line-height: 1.2; font-weight: 700; }
+  .domain-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 32px; }
+  .domain-stats .stat { display: flex; gap: 10px; }
+  .stat-link { color: var(--domain); }
+  .dashboard-section { margin-top: 32px; }
+  .recent-lessons { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lesson-preview { display: flex; flex-direction: column; gap: 16px; }
+  .lesson-meta { display: flex; justify-content: space-between; gap: 8px; font-size: .8rem; color: var(--on-surface-3); }
+  .lesson-preview h3 { font-size: 1rem; line-height: 1.6; flex: 1; margin: 0; }
+  @media (max-width: 680px) {
+    .recent-lessons { grid-template-columns: minmax(0, 1fr); }
+    .course-overview { grid-template-columns: minmax(0, 1fr); gap: 24px; padding: 20px; }
+    .review-entry { border-left: 0; border-top: 1px solid var(--outline-soft); padding: 20px 0 0; display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 12px; min-width: 0; }
+    .review-entry .btn { grid-column: 2; grid-row: 1 / 3; }
+    .review-count { margin-bottom: 0; }
+    .domain-stats { gap: 8px; }
+    .domain-stats .stat { padding: 16px 12px; }
+    .domain-stats .v { font-size: 1.6rem; }
+  }
+  @media (max-width: 360px) {
+    .review-entry .btn { font-size: .8rem; padding-inline: 10px; }
+    .domain-stats .stat { padding: 14px 10px; }
+  }
+</style>
