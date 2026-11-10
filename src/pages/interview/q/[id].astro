@@ -2,16 +2,16 @@
 import Base from '../../../layouts/Base.astro';
 import { NAV } from '../../../ui/nav.ts';
 import { getCollection, render } from 'astro:content';
+import { CATEGORY_LABEL as CAT, LANG_LABEL as LANG } from '../../../core/items.ts';
 export async function getStaticPaths() {
   const qs = await getCollection('interviewQuestions');
   return qs.map((q) => ({ params: { id: q.id }, props: { q } }));
 }
 const { q } = Astro.props;
 const { Content } = await render(q);
-const CAT: Record<string, string> = { intro: '자기소개', career: '경력', tech: '기술', behavioral: '행동·상황', culture: '회사·문화' };
 ---
 <Base title={q.data.q} domain="interview" nav={[...NAV.interview]}>
-  <div class="chips" style="margin-bottom:8px"><span class="chip chip-domain">{CAT[q.data.category]}</span><span class="chip">{q.data.lang}</span>{q.data.tags.map((t) => <span class="chip">{t}</span>)}<span class="chip">목표 {q.data.minutes}분</span></div>
+  <div class="chips" style="margin-bottom:8px"><span class="chip chip-domain">{CAT[q.data.category]}</span><span class="chip">{LANG[q.data.lang]}</span>{q.data.tags.map((t) => <span class="chip">{t}</span>)}<span class="chip">목표 {q.data.minutes}분</span></div>
   <h1 lang={q.data.lang === 'zh' ? 'zh-CN' : q.data.lang}>{q.data.q}</h1>
   {q.data.hint && <p class="muted">힌트: {q.data.hint}</p>}
   <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));align-items:start">

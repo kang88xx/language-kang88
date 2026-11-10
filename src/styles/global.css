@@ -141,6 +141,11 @@ details.lesson .body { padding: 0 20px 20px; }
 .fc-front { font-size: 1.9rem; font-weight: 500; }
 .fc-back { font-size: 1.2rem; color: var(--on-surface-2); border-top: 1px solid var(--outline-soft); padding-top: 20px; margin-top: 8px; width: 100%; }
 .fc-extra { color: var(--on-surface-3); }
+.fc-more { width: 100%; text-align: left; font-size: .87rem; color: var(--on-surface-2); }
+.fc-more > summary { padding: 11px 0; text-align: center; cursor: pointer; color: var(--domain); font-weight: 500; }
+.fc-more ul { margin: 4px 0 0; padding-left: 1.2rem; }
+.fc-more li + li { margin-top: 6px; }
+.fc-more p { margin: 4px 0 0; white-space: pre-wrap; }
 .fc-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
 .fc-grades { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 20px; }
 .fc-grades .btn { flex-direction: column; gap: 4px; padding: 12px 4px; border-radius: var(--r-md); }

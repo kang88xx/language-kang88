@@ -1,4 +1,4 @@
-import { loadCards, loadReviews } from '../core/storage.ts';
+import { loadCards, loadReviews, backupStatus } from '../core/storage.ts';
 import { dueCount } from '../core/srs.ts';
 import { streak, heatmap } from '../core/progress.ts';
 import { DOMAIN_LABEL, type Domain } from '../core/items.ts';
@@ -17,6 +17,19 @@ const todayEl = document.querySelector<HTMLElement>('[data-today]');
 if (todayEl) {
   const d = new Date(now); d.setHours(0, 0, 0, 0);
   todayEl.textContent = String(reviews.filter((r) => r.ts >= d.getTime()).length);
+}
+
+// 기록은 이 브라우저에만 있으므로, 백업 없이 일주일 넘게 쌓이면 알려 준다
+const notice = document.querySelector<HTMLElement>('[data-backup-notice]');
+if (notice) {
+  const b = backupStatus(now);
+  if (b.due) {
+    const days = b.lastExportAt ? Math.floor((now - b.lastExportAt) / 86_400_000) : 0;
+    notice.querySelector('[data-backup-text]')!.textContent = b.lastExportAt
+      ? `마지막 백업 후 ${days}일이 지났어요. 그 뒤의 학습 기록 ${b.pending}건은 이 브라우저에만 있어요.`
+      : `백업한 기록이 아직 없어요. 학습 기록 ${b.pending}건이 이 브라우저에만 있어요.`;
+    notice.classList.remove('hidden');
+  }
 }
 
 const dateEl = document.querySelector<HTMLTimeElement>('[data-home-date]');

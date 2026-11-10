@@ -7,7 +7,7 @@ import Base from '../layouts/Base.astro';
     <div class="card">
       <h2>진도 백업</h2>
       <p class="small">이 브라우저에 저장된 카드 <strong data-n-cards>0</strong>장 · 복습 기록 <strong data-n-reviews>0</strong>건 · 면접 답변 <strong data-n-answers>0</strong>건</p>
-      <div class="btn-row"><button class="btn btn-filled" data-export>JSON 내보내기</button></div>
+      <div class="btn-row"><button class="btn btn-filled" data-export>JSON 내보내기</button><span class="small muted">마지막 내보내기: <span data-last-export>–</span></span></div>
       <h3 style="margin-top:16px">가져오기</h3>
       <div class="toolbar"><select name="mode" aria-label="진도 가져오기 방식"><option value="merge">병합 (권장)</option><option value="replace">교체</option></select><input type="file" accept="application/json" aria-label="진도 백업 파일" data-import /></div>
       <p class="small muted" data-status></p>

@@ -43,13 +43,13 @@ Target WCAG AA text contrast, visible keyboard focus, skip link, meaningful land
 Validate 320/375/768/1024/1440 widths. Sidebar appears at 1100px; smaller widths use compact top navigation and bottom section navigation. Home columns stack; subject cards become a single column on phones. Inputs and grids must shrink without page overflow. Bottom navigation reserves safe-area padding. No hover-only controls.
 
 ## Interaction states
-Local stats start as a dash then update from browser storage. Empty history displays zeros and an invitation to start. Due reviews link to the most-due subject; if none are due, allow a new-card session. Existing filter empty/reset, review completion, answer-save feedback and import errors remain supported. All links use real routes; no decorative controls.
+Local stats start as a dash then update from browser storage. Empty history displays zeros and an invitation to start. Due reviews link to the most-due subject; if none are due, allow a new-card session. Existing filter empty/reset, review completion, answer-save feedback and import errors remain supported. All links use real routes; no decorative controls. Review cards for Chinese sentences and corrections prompt in Korean and answer in Chinese; a short note shows inline, longer notes fold under 해설 so the grade buttons stay in view. Home shows a quiet backup notice only when unexported records have waited more than a week, and it links to settings.
 
 ## Content voice
 Concise Korean, concrete study terms. English only for established subject identity. Avoid developer paths and implementation instructions in primary study flows; retain existing content-maintenance information inside secondary disclosure when necessary. Never imply cloud sync.
 
 ## Implementation constraints
-Astro 7.4.5, TypeScript and plain CSS/DOM modules. No new project dependencies. Core SRS, content and storage formats stay unchanged. Capture before/after desktop and mobile views; run core tests, build, responsive/console smoke and review/search/answer/settings interactions. Astro check is optional if its checker is unavailable; disclose a missing validation tool.
+Astro 7.4.5, TypeScript and plain CSS/DOM modules. No new runtime dependencies (dev-only tooling since 2026-11-10: `@astrojs/check`, `typescript`, `@types/node`, `playwright-core` for `npm run check` and `npm run check:ui`). Core SRS, content and storage formats stay unchanged. Capture before/after desktop and mobile views; run core tests, build, responsive/console smoke and review/search/answer/settings interactions. Astro check is optional if its checker is unavailable; disclose a missing validation tool.
 
 ## Open questions
 - [ ] Future English content-authoring workflow remains in PLAN.md; owner: product; no effect on this visual pass.

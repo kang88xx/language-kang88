@@ -2,8 +2,8 @@
 import Base from '../../layouts/Base.astro';
 import { NAV } from '../../ui/nav.ts';
 import { getCollection } from 'astro:content';
+import { CATEGORY_LABEL as CAT } from '../../core/items.ts';
 const qs = (await getCollection('interviewQuestions')).map((q) => ({ id: `interview:question:${q.id}`, ...q.data }));
-const CAT: Record<string, string> = { intro: '자기소개', career: '경력', tech: '기술', behavioral: '행동·상황', culture: '회사·문화' };
 ---
 <Base title="면접 연습" domain="interview" nav={[...NAV.interview]}>
   <div class="page-head"><h1>연습 모드</h1><span class="sub">랜덤 질문 → 생각 정리 → 타이머 답변 → 자가평가. 복습 간격에 반영됩니다.</span></div>

@@ -1,10 +1,10 @@
 /** 면접 연습 모드: 필터 → 랜덤 질문 → 준비 → 답변 타이머 → (녹음) → 자가평가 → SRS */
 import { newCard, review, type Grade } from '../core/srs.ts';
-import { loadCards, loadAnswers, saveCard, appendReview, saveAnswer } from '../core/storage.ts';
+import { loadCards, loadAnswers, latestAnswer, saveCard, appendReview, saveAnswer, requestPersistence } from '../core/storage.ts';
 import { startRecording, type Recorder } from '../core/audio.ts';
+import { CATEGORY_LABEL as CAT, LANG_LABEL as LANG } from '../core/items.ts';
 
 interface Q { id: string; q: string; category: string; lang: string; hint?: string; minutes: number; tags: string[] }
-const CAT: Record<string, string> = { intro: '자기소개', career: '경력', tech: '기술', behavioral: '행동·상황', culture: '회사·문화' };
 
 const root = document.querySelector<HTMLElement>('[data-practice]');
 if (root) {
@@ -50,7 +50,7 @@ if (root) {
     cur = pick();
     if (!cur) { stage.innerHTML = '<div class="empty">조건에 맞는 질문이 없습니다.</div>'; return; }
     const prep = Number(prepSel.value);
-    stage.innerHTML = `<div class="card"><div class="chips"><span class="chip chip-domain">${CAT[cur.category] ?? cur.category}</span><span class="chip">${cur.lang}</span></div>
+    stage.innerHTML = `<div class="card"><div class="chips"><span class="chip chip-domain">${CAT[cur.category] ?? cur.category}</span><span class="chip">${LANG[cur.lang] ?? cur.lang}</span></div>
       <p class="q-big" lang="${cur.lang === 'ko' ? 'ko' : cur.lang === 'en' ? 'en' : 'zh-CN'}">${esc(cur.q)}</p>
       ${cur.hint ? `<p class="muted small">힌트: ${esc(cur.hint)}</p>` : ''}
       <p class="muted">생각 정리 시간</p><div class="timer" data-t></div>
@@ -92,7 +92,7 @@ if (root) {
 
   function showGrade() {
     if (!cur) return;
-    const prev = (loadAnswers()[cur.id] ?? []).slice(-1)[0];
+    const prev = latestAnswer(loadAnswers()[cur.id]); // 연습 메모가 아니라 질문 상세에서 써 둔 답변
     stage.innerHTML = `<div class="card"><p class="q-big">${esc(cur.q)}</p>
       ${blobUrl ? `<audio controls src="${blobUrl}" style="width:100%;margin:8px 0"></audio><p class="small muted">녹음은 저장되지 않고 이 화면을 떠나면 사라집니다.</p>` : ''}
       ${prev ? `<details><summary class="muted small">저장된 모범답변 보기</summary><p style="white-space:pre-wrap">${esc(prev.text)}</p></details>` : ''}
@@ -111,6 +111,7 @@ if (root) {
       appendReview({ itemId: cur!.id, ts: now, grade: g });
       const note = stage.querySelector<HTMLTextAreaElement>('[data-note]')!.value.trim();
       if (note) saveAnswer(cur!.id, { ts: now, text: note, selfScore: g });
+      void requestPersistence();
       showPrep();
     }));
   }

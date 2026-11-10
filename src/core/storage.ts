@@ -13,12 +13,17 @@ export interface Snapshot {
   settings: Settings;
 }
 
+/** 이 기기에만 해당하는 상태. 내보내기 파일에는 넣지 않는다. */
+export interface Meta { lastExportAt?: number }
+
 const K = {
   cards: 'lang.v1.cards',
   reviews: 'lang.v1.reviews',
   answers: 'lang.v1.interview.answers',
   settings: 'lang.v1.settings',
+  meta: 'lang.v1.meta',
 } as const;
+const DAY = 86_400_000;
 
 type Backend = { getItem(k: string): string | null; setItem(k: string, v: string): void; removeItem(k: string): void };
 
@@ -55,6 +60,13 @@ export const loadCards = () => read<Record<string, CardState>>(K.cards, {});
 export const loadReviews = () => read<Review[]>(K.reviews, []);
 export const loadAnswers = () => read<Record<string, AnswerVersion[]>>(K.answers, {});
 export const loadSettings = () => read<Settings>(K.settings, {});
+export const loadMeta = () => read<Meta>(K.meta, {});
+
+/** 가장 최근에 '작성한' 답변. 연습 모드 메모(selfScore 가 붙은 항목)는 모범답변이 아니므로 건너뛴다. */
+export function latestAnswer(list: AnswerVersion[] = []): AnswerVersion | undefined {
+  for (let i = list.length - 1; i >= 0; i--) if (list[i].selfScore == null) return list[i];
+  return undefined;
+}
 
 export function saveCard(card: CardState): boolean {
   const cards = loadCards();
@@ -79,6 +91,33 @@ export function exportAll(): Snapshot {
   return { version: 1, exportedAt: Date.now(), cards: loadCards(), reviews: loadReviews(), answers: loadAnswers(), settings: loadSettings() };
 }
 
+/** 내보내기 파일을 내려보낼 때 호출한다. 브라우저는 저장이 끝났는지 알려 주지 않으므로, 내려보낸 시점을 백업 시각으로 본다. */
+export function markExported(now = Date.now()): void {
+  write(K.meta, { ...loadMeta(), lastExportAt: now });
+}
+
+/**
+ * 백업 알림 판단. `pending` 은 마지막 내보내기 뒤에 생긴 복습·답변 수.
+ * `due` 는 그런 기록이 있고, 마지막 내보내기(한 번도 없으면 가장 오래된 기록)로부터 `days` 일이 넘었는지.
+ */
+export function backupStatus(now = Date.now(), days = 7): { due: boolean; pending: number; lastExportAt?: number } {
+  const last = loadMeta().lastExportAt;
+  let pending = 0, oldest = Infinity;
+  const see = (ts: number) => { if (ts > (last ?? 0)) { pending++; if (ts < oldest) oldest = ts; } };
+  for (const r of loadReviews()) see(r.ts);
+  for (const list of Object.values(loadAnswers())) for (const a of list) see(a.ts);
+  return { due: pending > 0 && now - (last ?? oldest) > days * DAY, pending, lastExportAt: last };
+}
+
+/** 저장 공간이 부족해도 브라우저가 이 사이트 데이터를 먼저 지우지 않도록 보존을 요청한다. 지원하지 않거나 거절되면 false. */
+export async function requestPersistence(): Promise<boolean> {
+  try {
+    const s = (globalThis as { navigator?: { storage?: { persisted?: () => Promise<boolean>; persist?: () => Promise<boolean> } } }).navigator?.storage;
+    if (!s?.persist) return false;
+    return (await s.persisted?.()) === true || (await s.persist());
+  } catch { return false; }
+}
+
 /** 병합 가져오기: 카드는 due 가 더 최신인 쪽, 리뷰는 (itemId, ts) 중복 제거, 답변은 ts 중복 제거 */
 const isNum = (x: unknown): x is number => typeof x === 'number' && Number.isFinite(x);
 const isCard = (c: unknown): c is CardState => !!c && typeof c === 'object' && typeof (c as CardState).itemId === 'string'
@@ -99,6 +138,8 @@ export function validateSnapshot(snap: unknown): asserts snap is Snapshot {
 
 export function importAll(snap: Snapshot, mode: 'merge' | 'replace' = 'merge') {
   validateSnapshot(snap);
+  // 비어 있던 곳에 넣거나 통째로 바꾸면 이 기기의 내용은 그 파일과 같다 → 파일을 만든 시각까지는 백업된 것으로 본다
+  if ((mode === 'replace' || (!loadReviews().length && !Object.keys(loadAnswers()).length)) && isNum(snap.exportedAt)) write(K.meta, { lastExportAt: snap.exportedAt });
   if (mode === 'replace') {
     write(K.cards, snap.cards ?? {}); write(K.reviews, snap.reviews ?? []);
     write(K.answers, snap.answers ?? {}); write(K.settings, snap.settings ?? {});

@@ -1,4 +1,4 @@
-import { exportAll, importAll, clearAll, loadCards, loadReviews, loadAnswers, loadSettings, saveSettings, type Snapshot } from '../core/storage.ts';
+import { exportAll, importAll, clearAll, loadCards, loadReviews, loadAnswers, loadSettings, loadMeta, markExported, requestPersistence, saveSettings, type Snapshot } from '../core/storage.ts';
 import { voicesFor } from '../core/audio.ts';
 
 const $ = <T extends HTMLElement>(s: string) => document.querySelector<T>(s)!;
@@ -9,6 +9,8 @@ function stats() {
   $('[data-n-cards]').textContent = String(Object.keys(loadCards()).length);
   $('[data-n-reviews]').textContent = String(loadReviews().length);
   $('[data-n-answers]').textContent = String(Object.values(loadAnswers()).reduce((a, v) => a + v.length, 0));
+  const last = loadMeta().lastExportAt;
+  $('[data-last-export]').textContent = last ? new Date(last).toLocaleString('ko-KR', { dateStyle: 'medium', timeStyle: 'short' }) : '아직 없음';
 }
 stats();
 
@@ -19,7 +21,9 @@ $('[data-export]').addEventListener('click', () => {
   a.href = URL.createObjectURL(blob);
   a.download = `language-progress-${new Date().toISOString().slice(0, 10)}.json`;
   a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-  say('내보냈습니다.');
+  markExported(snap.exportedAt);
+  void requestPersistence();
+  stats(); say('내보냈습니다.');
 });
 
 $('[data-import]').addEventListener('change', async (e) => {

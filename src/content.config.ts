@@ -1,4 +1,5 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { z } from 'astro/zod';
 import { glob, file } from 'astro/loaders';
 
 const zhLessons = defineCollection({
@@ -21,6 +22,12 @@ const zhVocab = defineCollection({
 const zhFixes = defineCollection({
   loader: file('./content/zh/fixes.json'),
   schema: z.object({ id: z.string(), date: z.string(), n: z.number(), wrong: z.string(), right: z.string(), note: z.string() }),
+});
+
+// 사람이 관리하는 카드 보조 정보. import 스크립트는 이 파일을 건드리지 않는다.
+const zhCards = defineCollection({
+  loader: file('./content/zh/cards.json'),
+  schema: z.object({ id: z.string().regex(/^(sentence|fix):/), tr: z.string().optional(), front: z.string().optional() }),
 });
 
 const enVocab = defineCollection({
@@ -51,4 +58,4 @@ const interviewQuestions = defineCollection({
   }),
 });
 
-export const collections = { zhLessons, zhVocab, zhFixes, enVocab, enExpressions, enShadowing, interviewQuestions };
+export const collections = { zhLessons, zhVocab, zhFixes, zhCards, enVocab, enExpressions, enShadowing, interviewQuestions };

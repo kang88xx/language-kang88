@@ -1,11 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
+import { zhSentenceItems } from '../core/convert.ts';
 const [zhV, zhL, zhF, enV, enE, enS, iq] = await Promise.all([
   getCollection('zhVocab'), getCollection('zhLessons'), getCollection('zhFixes'),
   getCollection('enVocab'), getCollection('enExpressions'), getCollection('enShadowing'), getCollection('interviewQuestions'),
 ]);
-const zhSent = zhL.reduce((a, l) => a + l.data.items.length, 0);
+const zhSent = zhSentenceItems(zhL.map((l) => l.data)).length;
 const enSent = enS.reduce((a, s) => a + s.data.sentences.length, 0);
 const spaces = [
   { d: 'zh', title: '중국어', native: '中文', sub: '전화중국어 수업 기록', mark: '中',
@@ -21,6 +22,10 @@ const spaces = [
     <div><p class="home-overline">나만의 학습 공간</p><h1>오늘의 학습</h1><p class="muted">조금씩, 꾸준히. 오늘의 한 걸음을 시작해 보세요.</p></div>
     <time class="home-date" data-home-date></time>
   </div>
+
+  <a class="backup-notice hidden" href="/settings/" data-backup-notice>
+    <span data-backup-text></span><span class="backup-action">백업하기 <span aria-hidden="true">→</span></span>
+  </a>
 
   <section class="daily-layout" aria-label="오늘의 학습 요약">
     <div class="review-spotlight">
@@ -80,6 +85,9 @@ const spaces = [
   .home-heading h1 { font-size: clamp(1.8rem, 3vw, 2.15rem); font-weight: 700; letter-spacing: -.045em; margin-bottom: 10px; }
   .home-heading p:last-child { margin: 0; font-size: .9rem; }
   .home-date { color: var(--on-surface-3); font-size: .85rem; white-space: nowrap; align-self: flex-start; padding-top: 6px; }
+  .backup-notice { display: flex; align-items: center; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; margin-bottom: 20px; padding: 12px 18px; border: 1px solid var(--outline); border-radius: var(--r-md); background: var(--surface); color: var(--on-surface-2); font-size: .85rem; }
+  .backup-notice:hover { text-decoration: none; border-color: var(--blue); }
+  .backup-action { color: var(--blue-text); font-weight: 500; white-space: nowrap; }
   .daily-layout { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(230px, 1fr); gap: 20px; margin-bottom: 36px; }
   .review-spotlight { background: var(--blue-soft); border: 1px solid var(--blue-cont); border-radius: var(--r-lg); display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 28px 32px; }
   .spotlight-label { display: block; color: var(--blue); font-size: .8rem; font-weight: 700; margin-bottom: 14px; }

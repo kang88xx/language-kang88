@@ -1,5 +1,6 @@
 {
   "redirects": [
-    { "source": "/zh/:path*", "has": [{ "type": "host", "value": "chinese.study.kang88.io" }], "destination": "https://study.kang88.io/zh/:path*", "permanent": true }
+    { "source": "/zh/:path*", "has": [{ "type": "host", "value": "chinese\\.study\\.kang88\\.io" }], "destination": "https://study.kang88.io/zh/:path*", "permanent": true },
+    { "source": "/(.*)", "has": [{ "type": "host", "value": "chinese\\.study\\.kang88\\.io" }], "destination": "https://study.kang88.io/zh/", "permanent": true }
   ]
 }

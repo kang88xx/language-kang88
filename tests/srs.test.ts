@@ -11,15 +11,22 @@ test('new card is due immediately', () => {
   assert.equal(c.interval, 0);
 });
 
-test('good → 1d → 4d → ease×', () => {
+test('good → 2d → 5d → ease×', () => {
   let c = review(newCard('x', T0), 2, T0);
-  assert.equal(c.interval, 1);
-  assert.equal(c.due, T0 + DAY);
+  assert.equal(c.interval, 2);
+  assert.equal(c.due, T0 + 2 * DAY);
   c = review(c, 2, c.due);
-  assert.equal(c.interval, 4);
+  assert.equal(c.interval, 5);
   const before = c.interval;
   c = review(c, 2, c.due);
   assert.equal(c.interval, Math.round(before * 2.5));
+});
+
+test('first interval differs per grade, so the four buttons never show the same result', () => {
+  const first = ([1, 2, 3] as const).map((g) => review(newCard('x', T0), g, T0).interval);
+  assert.deepEqual(first, [1, 2, 4]);
+  const second = ([1, 2, 3] as const).map((g) => review(review(newCard('x', T0), 1, T0), g, T0 + DAY).interval);
+  assert.deepEqual(second, [2, 4, 7]);
 });
 
 test('again resets interval, lowers ease, reschedules in 10 min', () => {
@@ -55,7 +62,7 @@ test('dueCount respects prefix', () => {
 });
 
 test('hard always grows the interval by at least one day', () => {
-  let c = review(newCard('x', T0), 2, T0); // 1d
+  let c = review(newCard('x', T0), 1, T0); // 1d
   c = review(c, 1, c.due);                 // 2d
   c = review(c, 1, c.due);
   assert.equal(c.interval, 3);

@@ -32,7 +32,8 @@ export function review(card: CardState, grade: Grade, now = Date.now()): CardSta
     next.due = now + 10 * 60_000; // 10분 뒤 같은 세션에서 다시
     return next;
   }
-  if (card.interval === 0) next.interval = grade === 1 ? 1 : grade === 2 ? 1 : 3;
+  // 첫 간격도 평가마다 달라야 버튼이 구분된다: 어려움 1일 · 보통 2일 · 쉬움 4일
+  if (card.interval === 0) next.interval = grade === 1 ? 1 : grade === 2 ? 2 : 4;
   else if (card.interval === 1) next.interval = grade === 1 ? 2 : grade === 2 ? 4 : 7;
   else next.interval = Math.max(card.interval + 1, Math.round(card.interval * (grade === 1 ? 1.2 : grade === 2 ? card.ease : card.ease * 1.3)));
   next.ease = Math.max(MIN_EASE, card.ease + (grade === 1 ? -0.15 : grade === 2 ? 0 : 0.15));

@@ -4,11 +4,12 @@ import Flashcard from '../../ui/Flashcard.astro';
 import { NAV } from '../../ui/nav.ts';
 import { getCollection } from 'astro:content';
 import { zhVocabItems, zhSentenceItems, zhFixItems } from '../../core/convert.ts';
-const [v, l, f] = await Promise.all([getCollection('zhVocab'), getCollection('zhLessons'), getCollection('zhFixes')]);
+const [v, l, f, c] = await Promise.all([getCollection('zhVocab'), getCollection('zhLessons'), getCollection('zhFixes'), getCollection('zhCards')]);
+const cards = Object.fromEntries(c.map((x) => [x.data.id, x.data]));
 const byDateDesc = <T extends { date: string }>(a: T, b: T) => b.date.localeCompare(a.date);
-const items = [...zhVocabItems(v.map((x) => x.data).sort(byDateDesc)), ...zhFixItems(f.map((x) => x.data).sort(byDateDesc)), ...zhSentenceItems(l.map((x) => x.data).sort(byDateDesc))];
+const items = [...zhVocabItems(v.map((x) => x.data).sort(byDateDesc)), ...zhFixItems(f.map((x) => x.data).sort(byDateDesc), cards), ...zhSentenceItems(l.map((x) => x.data).sort(byDateDesc), cards)];
 ---
 <Base title="중국어 복습" domain="zh" nav={[...NAV.zh]}>
-  <div class="page-head"><h1>복습</h1><span class="sub">최신 수업부터 단어 → 교정 → 문장 순으로 새 카드가 추가됩니다 · 전체 {items.length}장</span></div>
+  <div class="page-head"><h1>복습</h1><span class="sub">최신 수업부터 단어 → 교정 → 문장 순으로 새 카드가 추가됩니다. 교정·문장은 한국어를 보고 중국어로 말해 보세요 · 전체 {items.length}장</span></div>
   <Flashcard items={items} domain="zh" />
 </Base>

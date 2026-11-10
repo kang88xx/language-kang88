@@ -4,10 +4,9 @@ import Search from '../../ui/Search.astro';
 import Empty from '../../ui/Empty.astro';
 import { NAV } from '../../ui/nav.ts';
 import { getCollection } from 'astro:content';
+import { CATEGORY_LABEL as CAT, LANG_LABEL as LANG } from '../../core/items.ts';
 const ORDER = ['intro', 'career', 'tech', 'behavioral', 'culture'];
 const qs = (await getCollection('interviewQuestions')).sort((a, b) => ORDER.indexOf(a.data.category) - ORDER.indexOf(b.data.category) || Number(b.data.star) - Number(a.data.star));
-const CAT: Record<string, string> = { intro: '자기소개', career: '경력', tech: '기술', behavioral: '행동·상황', culture: '회사·문화' };
-const LANG: Record<string, string> = { ko: '한국어', en: '영어', zh: '중국어' };
 ---
 <Base title="면접 질문 은행" domain="interview" nav={[...NAV.interview]}>
   <div class="page-head"><h1>질문 은행</h1><span class="sub"><span data-count>{qs.length}</span>개 · 답변은 이 브라우저에만 저장됩니다</span><a class="btn btn-filled btn-sm" href="/interview/practice/">▶ 연습 시작</a></div>

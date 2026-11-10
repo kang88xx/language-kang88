@@ -6,9 +6,11 @@ import cal from '../../../content/zh/calendar.json';
 const [lessons, vocab, fixes] = await Promise.all([getCollection('zhLessons'), getCollection('zhVocab'), getCollection('zhFixes')]);
 const p = cal.progress;
 const WD = ['일', '월', '화', '수', '목', '금', '토'];
-type Month = typeof cal.months[number] & { start?: number };
+// 달마다 att 의 키와 빈 배열이 달라 JSON 추론 타입으로는 다룰 수 없으므로 모양을 직접 적는다
+interface Month { name: string; blanks: number; days: number; att: Record<string, number>; abs: number[]; cancel: number[]; pp: number[]; rp: number[] }
+const months = cal.months as unknown as Month[];
 const cls = (m: Month, d: number) => {
-  const att = (m.att as Record<string, number>)[String(d)];
+  const att = m.att[String(d)];
   if (att) return ['att', att] as const;
   if (m.abs.includes(d)) return ['abs', '결'] as const;
   if (m.cancel.includes(d)) return ['cancel', '휴'] as const;
@@ -60,12 +62,12 @@ const latest = lessons.map((l) => l.data).sort((a, b) => b.date.localeCompare(a.
     <div class="section-head"><h2 id="attendance-title">출석 달력</h2><span class="small muted">수업의 발자취</span></div>
     <div class="legend"><span><i style="background:var(--blue-cont)"></i>출석(회차)</span><span><i style="background:var(--red-cont)"></i>결석</span><span><i style="background:var(--surface-3)"></i>휴강</span><span><i style="background:var(--yellow-cont)"></i>연기</span></div>
     <div class="cal-months">
-      {cal.months.map((m) => (
+      {months.map((m) => (
         <div class="cal"><h3>{m.name}</h3>
           <div class="cal-grid">
             {WD.map((w) => <span class="wd">{w}</span>)}
             {Array.from({ length: m.blanks }, () => <span class="d blank"></span>)}
-            {Array.from({ length: m.days }, (_, i) => { const d = i + 1; const [c, label] = cls(m as Month, d); return <span class={`d ${c}`} title={`${d}일${label ? ` · ${label}` : ''}`}>{c === 'att' ? label : d}</span>; })}
+            {Array.from({ length: m.days }, (_, i) => { const d = i + 1; const [c, label] = cls(m, d); return <span class={`d ${c}`} title={`${d}일${label ? ` · ${label}` : ''}`}>{c === 'att' ? label : d}</span>; })}
           </div>
         </div>
       ))}
