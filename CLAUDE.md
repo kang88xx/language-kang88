@@ -9,3 +9,15 @@
 - 환경 주의: `/mnt/j` 는 Windows 드라이브라 심볼릭 링크 불가 → `npm install --no-bin-links`, 스크립트는 `node node_modules/astro/bin/astro.mjs` 로 호출. `playwright-core` 는 이 기기에 설치된 Chromium 빌드(1248)에 맞춰 1.64.1 로 고정.
 - 원칙: 면접 답변 등 개인정보는 콘텐츠 파일·저장소에 넣지 않고 localStorage 에만 둔다. 복습 로직(`src/core`)은 DOM 의존 없이 `node --test` 로 검증한다. 카드 ID(`zh:<type>:<date>-<hash>`)는 진도의 키라 바꾸지 않는다. 화면 변경 후 `npm run build && npm run check:ui` 로 가로 넘침·콘솔 오류·핵심 흐름을 확인한다.
 - 다음 할 일: PLAN.md §7 2단계(영어 입력 큐), 3단계 보강(면접 카테고리 확정), 실제 영어 콘텐츠 채우기, `chinese.study.kang88.io` 도메인 이전 시점 결정, 홈 화면 설치(PWA) 여부 결정(PLAN.md §8).
+
+## Skill routing
+
+When the user's request matches an available skill, invoke it via the Skill tool. Route only to skills in the session's available-skills list; answer directly for quick questions or small scoped edits.
+
+Key routing rules:
+- Product ideas/brainstorming → invoke /office-hours
+- QA/testing site behavior → invoke /qa
+- Code review/diff check → invoke /review
+- Ship/deploy/PR → invoke /ship
+
+Do not suggest or auto-invoke other gstack skills: they run when the user types them, or when a running skill hands off to them (`gstack-config set proactive all` routes every skill).
